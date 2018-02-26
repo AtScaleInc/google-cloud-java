@@ -33,20 +33,7 @@ import com.google.api.client.json.JsonFactory;
 import com.google.api.client.json.jackson.JacksonFactory;
 import com.google.api.core.InternalApi;
 import com.google.api.services.bigquery.Bigquery;
-import com.google.api.services.bigquery.model.Dataset;
-import com.google.api.services.bigquery.model.DatasetList;
-import com.google.api.services.bigquery.model.DatasetReference;
-import com.google.api.services.bigquery.model.GetQueryResultsResponse;
-import com.google.api.services.bigquery.model.Job;
-import com.google.api.services.bigquery.model.JobConfiguration;
-import com.google.api.services.bigquery.model.JobList;
-import com.google.api.services.bigquery.model.JobStatus;
-import com.google.api.services.bigquery.model.Table;
-import com.google.api.services.bigquery.model.TableDataInsertAllRequest;
-import com.google.api.services.bigquery.model.TableDataInsertAllResponse;
-import com.google.api.services.bigquery.model.TableDataList;
-import com.google.api.services.bigquery.model.TableList;
-import com.google.api.services.bigquery.model.TableReference;
+import com.google.api.services.bigquery.model.*;
 import com.google.cloud.Tuple;
 import com.google.cloud.bigquery.BigQueryException;
 import com.google.cloud.bigquery.BigQueryOptions;
@@ -389,6 +376,15 @@ public class HttpBigQueryRpc implements BigQueryRpc {
               ? BigInteger.valueOf(Option.START_INDEX.getLong(options)) : null)
           .setTimeoutMs(Option.TIMEOUT.getLong(options))
           .execute();
+    } catch (IOException ex) {
+      throw translate(ex);
+    }
+  }
+
+  @Override
+  public QueryResponse query(QueryRequest request) {
+    try {
+      return bigquery.jobs().query(this.options.getProjectId(), request).execute();
     } catch (IOException ex) {
       throw translate(ex);
     }

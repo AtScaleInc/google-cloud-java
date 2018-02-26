@@ -847,7 +847,7 @@ public final class QueryJobConfiguration extends JobConfiguration {
         }
       };
 
-  private static final Function<QueryParameterValue, QueryParameter> POSITIONAL_PARAMETER_TO_PB_FUNCTION =
+  static final Function<QueryParameterValue, QueryParameter> POSITIONAL_PARAMETER_TO_PB_FUNCTION =
       new Function<QueryParameterValue, QueryParameter>() {
         @Override
         public QueryParameter apply(QueryParameterValue value) {
@@ -858,7 +858,7 @@ public final class QueryJobConfiguration extends JobConfiguration {
         }
       };
 
-  private static final Function<Map.Entry<String, QueryParameterValue>, QueryParameter>
+  static final Function<Map.Entry<String, QueryParameterValue>, QueryParameter>
       NAMED_PARAMETER_TO_PB_FUNCTION =
           new Function<Map.Entry<String, QueryParameterValue>, QueryParameter>() {
             @Override

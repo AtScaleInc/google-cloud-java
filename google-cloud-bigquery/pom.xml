@@ -1,6 +1,7 @@
 <?xml version="1.0"?>
 <project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
   <modelVersion>4.0.0</modelVersion>
+  <groupId>com.atscale.engine.deps.google</groupId>
   <artifactId>google-cloud-bigquery</artifactId>
   <version>0.35.0-beta</version>
   <packaging>jar</packaging>
@@ -19,11 +20,11 @@
   </properties>
   <dependencies>
     <dependency>
-      <groupId>${project.groupId}</groupId>
+      <groupId>${parent.groupId}</groupId>
       <artifactId>google-cloud-core</artifactId>
     </dependency>
     <dependency>
-      <groupId>${project.groupId}</groupId>
+      <groupId>${parent.groupId}</groupId>
       <artifactId>google-cloud-core-http</artifactId>
     </dependency>
     <dependency>
@@ -32,7 +33,7 @@
       <scope>compile</scope>
     </dependency>
     <dependency>
-      <groupId>${project.groupId}</groupId>
+      <groupId>${parent.groupId}</groupId>
       <artifactId>google-cloud-storage</artifactId>
       <scope>test</scope>
     </dependency>
@@ -48,7 +49,7 @@
       </exclusions>
     </dependency>
     <dependency>
-      <groupId>${project.groupId}</groupId>
+      <groupId>${parent.groupId}</groupId>
       <artifactId>google-cloud-core</artifactId>
       <type>test-jar</type>
       <scope>test</scope>
