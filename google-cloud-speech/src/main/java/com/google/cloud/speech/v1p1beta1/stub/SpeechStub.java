@@ -33,7 +33,7 @@ import javax.annotation.Generated;
 
 // AUTO-GENERATED DOCUMENTATION AND CLASS
 /**
- * Base stub class for Google Cloud Speech API.
+ * Base stub class for Cloud Speech API.
  *
  * <p>This class is for advanced usage and reflects the underlying API directly.
  */
@@ -64,4 +64,7 @@ public abstract class SpeechStub implements BackgroundResource {
       streamingRecognizeCallable() {
     throw new UnsupportedOperationException("Not implemented: streamingRecognizeCallable()");
   }
+
+  @Override
+  public abstract void close();
 }

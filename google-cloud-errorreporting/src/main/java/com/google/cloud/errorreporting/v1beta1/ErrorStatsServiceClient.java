@@ -197,7 +197,46 @@ public class ErrorStatsServiceClient implements BackgroundResource {
       ProjectName projectName, QueryTimeRange timeRange) {
     ListGroupStatsRequest request =
         ListGroupStatsRequest.newBuilder()
-            .setProjectName(projectName.toString())
+            .setProjectName(projectName == null ? null : projectName.toString())
+            .setTimeRange(timeRange)
+            .build();
+    return listGroupStats(request);
+  }
+
+  // AUTO-GENERATED DOCUMENTATION AND METHOD
+  /**
+   * Lists the specified groups.
+   *
+   * <p>Sample code:
+   *
+   * <pre><code>
+   * try (ErrorStatsServiceClient errorStatsServiceClient = ErrorStatsServiceClient.create()) {
+   *   ProjectName projectName = ProjectName.of("[PROJECT]");
+   *   QueryTimeRange timeRange = QueryTimeRange.newBuilder().build();
+   *   for (ErrorGroupStats element : errorStatsServiceClient.listGroupStats(projectName.toString(), timeRange).iterateAll()) {
+   *     // doThingsWith(element);
+   *   }
+   * }
+   * </code></pre>
+   *
+   * @param projectName [Required] The resource name of the Google Cloud Platform project. Written
+   *     as &lt;code&gt;projects/&lt;/code&gt; plus the &lt;a
+   *     href="https://support.google.com/cloud/answer/6158840"&gt;Google Cloud Platform project
+   *     ID&lt;/a&gt;.
+   *     <p>Example: &lt;code&gt;projects/my-project-123&lt;/code&gt;.
+   * @param timeRange [Optional] List data for the given time range. If not set a default time range
+   *     is used. The field time_range_begin in the response will specify the beginning of this time
+   *     range. Only &lt;code&gt;ErrorGroupStats&lt;/code&gt; with a non-zero count in the given
+   *     time range are returned, unless the request contains an explicit group_id list. If a
+   *     group_id list is given, also &lt;code&gt;ErrorGroupStats&lt;/code&gt; with zero occurrences
+   *     are returned.
+   * @throws com.google.api.gax.rpc.ApiException if the remote call fails
+   */
+  public final ListGroupStatsPagedResponse listGroupStats(
+      String projectName, QueryTimeRange timeRange) {
+    ListGroupStatsRequest request =
+        ListGroupStatsRequest.newBuilder()
+            .setProjectName(projectName)
             .setTimeRange(timeRange)
             .build();
     return listGroupStats(request);
@@ -316,9 +355,37 @@ public class ErrorStatsServiceClient implements BackgroundResource {
   public final ListEventsPagedResponse listEvents(ProjectName projectName, String groupId) {
     ListEventsRequest request =
         ListEventsRequest.newBuilder()
-            .setProjectName(projectName.toString())
+            .setProjectName(projectName == null ? null : projectName.toString())
             .setGroupId(groupId)
             .build();
+    return listEvents(request);
+  }
+
+  // AUTO-GENERATED DOCUMENTATION AND METHOD
+  /**
+   * Lists the specified events.
+   *
+   * <p>Sample code:
+   *
+   * <pre><code>
+   * try (ErrorStatsServiceClient errorStatsServiceClient = ErrorStatsServiceClient.create()) {
+   *   ProjectName projectName = ProjectName.of("[PROJECT]");
+   *   String groupId = "";
+   *   for (ErrorEvent element : errorStatsServiceClient.listEvents(projectName.toString(), groupId).iterateAll()) {
+   *     // doThingsWith(element);
+   *   }
+   * }
+   * </code></pre>
+   *
+   * @param projectName [Required] The resource name of the Google Cloud Platform project. Written
+   *     as `projects/` plus the [Google Cloud Platform project
+   *     ID](https://support.google.com/cloud/answer/6158840). Example: `projects/my-project-123`.
+   * @param groupId [Required] The group for which events shall be returned.
+   * @throws com.google.api.gax.rpc.ApiException if the remote call fails
+   */
+  public final ListEventsPagedResponse listEvents(String projectName, String groupId) {
+    ListEventsRequest request =
+        ListEventsRequest.newBuilder().setProjectName(projectName).setGroupId(groupId).build();
     return listEvents(request);
   }
 
@@ -429,7 +496,34 @@ public class ErrorStatsServiceClient implements BackgroundResource {
   public final DeleteEventsResponse deleteEvents(ProjectName projectName) {
 
     DeleteEventsRequest request =
-        DeleteEventsRequest.newBuilder().setProjectName(projectName.toString()).build();
+        DeleteEventsRequest.newBuilder()
+            .setProjectName(projectName == null ? null : projectName.toString())
+            .build();
+    return deleteEvents(request);
+  }
+
+  // AUTO-GENERATED DOCUMENTATION AND METHOD
+  /**
+   * Deletes all error events of a given project.
+   *
+   * <p>Sample code:
+   *
+   * <pre><code>
+   * try (ErrorStatsServiceClient errorStatsServiceClient = ErrorStatsServiceClient.create()) {
+   *   ProjectName projectName = ProjectName.of("[PROJECT]");
+   *   DeleteEventsResponse response = errorStatsServiceClient.deleteEvents(projectName.toString());
+   * }
+   * </code></pre>
+   *
+   * @param projectName [Required] The resource name of the Google Cloud Platform project. Written
+   *     as `projects/` plus the [Google Cloud Platform project
+   *     ID](https://support.google.com/cloud/answer/6158840). Example: `projects/my-project-123`.
+   * @throws com.google.api.gax.rpc.ApiException if the remote call fails
+   */
+  public final DeleteEventsResponse deleteEvents(String projectName) {
+
+    DeleteEventsRequest request =
+        DeleteEventsRequest.newBuilder().setProjectName(projectName).build();
     return deleteEvents(request);
   }
 
@@ -479,7 +573,7 @@ public class ErrorStatsServiceClient implements BackgroundResource {
   }
 
   @Override
-  public final void close() throws Exception {
+  public final void close() {
     stub.close();
   }
 

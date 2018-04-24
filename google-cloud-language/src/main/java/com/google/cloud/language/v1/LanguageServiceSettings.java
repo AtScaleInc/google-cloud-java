@@ -50,7 +50,7 @@ import javax.annotation.Generated;
  * <code>
  * LanguageServiceSettings.Builder languageServiceSettingsBuilder =
  *     LanguageServiceSettings.newBuilder();
- * languageServiceSettingsBuilder.analyzeSentimentSettings().getRetrySettingsBuilder()
+ * languageServiceSettingsBuilder.analyzeSentimentSettings().getRetrySettings().toBuilder()
  *     .setTotalTimeout(Duration.ofSeconds(30));
  * LanguageServiceSettings languageServiceSettings = languageServiceSettingsBuilder.build();
  * </code>
@@ -175,6 +175,7 @@ public class LanguageServiceSettings extends ClientSettings<LanguageServiceSetti
       return ((LanguageServiceStubSettings.Builder) getStubSettings());
     }
 
+    // NEXT_MAJOR_VER: remove 'throws Exception'
     /**
      * Applies the given settings updater function to all of the unary API methods in this service.
      *

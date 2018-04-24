@@ -32,53 +32,51 @@ import com.google.auth.oauth2.ServiceAccountCredentials;
 import com.google.cloud.pubsub.v1.AckReplyConsumer;
 import com.google.cloud.pubsub.v1.MessageReceiver;
 import com.google.cloud.pubsub.v1.Subscriber;
-import com.google.cloud.pubsub.v1.stub.SubscriberStubSettings;
 import com.google.cloud.pubsub.v1.stub.GrpcSubscriberStub;
 import com.google.cloud.pubsub.v1.stub.SubscriberStub;
+import com.google.cloud.pubsub.v1.stub.SubscriberStubSettings;
 import com.google.common.util.concurrent.MoreExecutors;
 import com.google.pubsub.v1.AcknowledgeRequest;
+import com.google.pubsub.v1.ProjectSubscriptionName;
 import com.google.pubsub.v1.PubsubMessage;
 import com.google.pubsub.v1.PullRequest;
 import com.google.pubsub.v1.PullResponse;
 import com.google.pubsub.v1.ReceivedMessage;
-import com.google.pubsub.v1.SubscriptionName;
 import java.io.FileInputStream;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.concurrent.Executor;
+import java.util.concurrent.ExecutorService;
+import java.util.concurrent.Executors;
 
 /** This class contains snippets for the {@link Subscriber} interface. */
 public class SubscriberSnippets {
 
-  private final SubscriptionName subscriptionName;
+  private final ProjectSubscriptionName subscriptionName;
 
   private final MessageReceiver receiver;
 
   private final ApiFuture<Void> done;
 
-  private final Executor executor;
-
   public SubscriberSnippets(
-      SubscriptionName subscriptionName,
+      ProjectSubscriptionName subscriptionName,
       MessageReceiver receiver,
-      ApiFuture<Void> done,
-      Executor executor) {
+      ApiFuture<Void> done) {
     this.subscriptionName = subscriptionName;
     this.receiver = receiver;
     this.done = done;
-    this.executor = executor;
   }
 
   // [TARGET startAsync()]
   public void startAndWait() throws Exception {
     Subscriber subscriber = Subscriber.newBuilder(subscriptionName, receiver).build();
+    ExecutorService pool = Executors.newCachedThreadPool();
     subscriber.addListener(
         new Subscriber.Listener() {
           public void failed(Subscriber.State from, Throwable failure) {
             // Handle error.
           }
         },
-        executor);
+        pool);
     subscriber.startAsync();
 
     // Wait for a stop signal.
@@ -97,6 +95,7 @@ public class SubscriberSnippets {
     //   }
     // at the end of main() to previent the main thread from exiting.
     done.get();
+    pool.shutdown();
     subscriber.stopAsync().awaitTerminated();
   }
 
@@ -105,7 +104,7 @@ public class SubscriberSnippets {
     String projectId = "my-project-id";
     String subscriptionId = "my-subscription-id";
 
-    SubscriptionName subscriptionName = SubscriptionName.of(projectId, subscriptionId);
+    ProjectSubscriptionName subscriptionName = ProjectSubscriptionName.of(projectId, subscriptionId);
     // Instantiate an asynchronous message receiver
     MessageReceiver receiver =
         new MessageReceiver() {
@@ -162,10 +161,11 @@ public class SubscriberSnippets {
 
   private Subscriber createSubscriberWithCustomFlowSettings() throws Exception {
     // [START pubsub_subscriber_flow_settings]
-    long maxMessageCount = 10L;
-    // Configure max number of messages to be pulled
     FlowControlSettings flowControlSettings =
-        FlowControlSettings.newBuilder().setMaxOutstandingElementCount(maxMessageCount).build();
+        FlowControlSettings.newBuilder()
+            .setMaxOutstandingElementCount(10_000L)
+            .setMaxOutstandingRequestBytes(1_000_000_000L)
+            .build();
     Subscriber subscriber =
         Subscriber.newBuilder(subscriptionName, receiver)
             .setFlowControlSettings(flowControlSettings)
@@ -197,7 +197,7 @@ public class SubscriberSnippets {
       // String projectId = "my-project-id";
       // String subscriptionId = "my-subscription-id";
       // int numOfMessages = 10;   // max number of messages to be pulled
-      String subscriptionName = SubscriptionName.of(projectId, subscriptionId).toString();
+      String subscriptionName = ProjectSubscriptionName.format(projectId, subscriptionId);
       PullRequest pullRequest =
           PullRequest.newBuilder()
               .setMaxMessages(numOfMessages)

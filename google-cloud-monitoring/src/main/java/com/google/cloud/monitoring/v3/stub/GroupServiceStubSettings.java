@@ -80,7 +80,7 @@ import org.threeten.bp.Duration;
  * <code>
  * GroupServiceStubSettings.Builder groupServiceSettingsBuilder =
  *     GroupServiceStubSettings.newBuilder();
- * groupServiceSettingsBuilder.getGroupSettings().getRetrySettingsBuilder()
+ * groupServiceSettingsBuilder.getGroupSettings().getRetrySettings().toBuilder()
  *     .setTotalTimeout(Duration.ofSeconds(30));
  * GroupServiceStubSettings groupServiceSettings = groupServiceSettingsBuilder.build();
  * </code>
@@ -469,6 +469,7 @@ public class GroupServiceStubSettings extends StubSettings<GroupServiceStubSetti
               listGroupMembersSettings);
     }
 
+    // NEXT_MAJOR_VER: remove 'throws Exception'
     /**
      * Applies the given settings updater function to all of the unary API methods in this service.
      *

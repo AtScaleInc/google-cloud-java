@@ -82,7 +82,7 @@ import javax.annotation.Generated;
  * <code>
  * SubscriptionAdminSettings.Builder subscriptionAdminSettingsBuilder =
  *     SubscriptionAdminSettings.newBuilder();
- * subscriptionAdminSettingsBuilder.createSubscriptionSettings().getRetrySettingsBuilder()
+ * subscriptionAdminSettingsBuilder.createSubscriptionSettings().getRetrySettings().toBuilder()
  *     .setTotalTimeout(Duration.ofSeconds(30));
  * SubscriptionAdminSettings subscriptionAdminSettings = subscriptionAdminSettingsBuilder.build();
  * </code>
@@ -271,6 +271,7 @@ public class SubscriptionAdminSettings extends ClientSettings<SubscriptionAdminS
       return ((SubscriberStubSettings.Builder) getStubSettings());
     }
 
+    // NEXT_MAJOR_VER: remove 'throws Exception'
     /**
      * Applies the given settings updater function to all of the unary API methods in this service.
      *

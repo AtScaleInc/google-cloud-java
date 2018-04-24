@@ -94,7 +94,7 @@ import org.threeten.bp.Duration;
  * <code>
  * FirestoreStubSettings.Builder firestoreSettingsBuilder =
  *     FirestoreStubSettings.newBuilder();
- * firestoreSettingsBuilder.updateDocumentSettings().getRetrySettingsBuilder()
+ * firestoreSettingsBuilder.updateDocumentSettings().getRetrySettings().toBuilder()
  *     .setTotalTimeout(Duration.ofSeconds(30));
  * FirestoreStubSettings firestoreSettings = firestoreSettingsBuilder.build();
  * </code>
@@ -596,6 +596,7 @@ public class FirestoreStubSettings extends StubSettings<FirestoreStubSettings> {
               listCollectionIdsSettings);
     }
 
+    // NEXT_MAJOR_VER: remove 'throws Exception'
     /**
      * Applies the given settings updater function to all of the unary API methods in this service.
      *

@@ -56,7 +56,7 @@ import javax.annotation.Generated;
  * <code>
  * ClusterControllerSettings.Builder clusterControllerSettingsBuilder =
  *     ClusterControllerSettings.newBuilder();
- * clusterControllerSettingsBuilder.getClusterSettings().getRetrySettingsBuilder()
+ * clusterControllerSettingsBuilder.getClusterSettings().getRetrySettings().toBuilder()
  *     .setTotalTimeout(Duration.ofSeconds(30));
  * ClusterControllerSettings clusterControllerSettings = clusterControllerSettingsBuilder.build();
  * </code>
@@ -204,6 +204,7 @@ public class ClusterControllerSettings extends ClientSettings<ClusterControllerS
       return ((ClusterControllerStubSettings.Builder) getStubSettings());
     }
 
+    // NEXT_MAJOR_VER: remove 'throws Exception'
     /**
      * Applies the given settings updater function to all of the unary API methods in this service.
      *

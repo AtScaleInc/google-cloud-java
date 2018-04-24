@@ -62,7 +62,7 @@ import org.threeten.bp.Duration;
  * <code>
  * ReportErrorsServiceStubSettings.Builder reportErrorsServiceSettingsBuilder =
  *     ReportErrorsServiceStubSettings.newBuilder();
- * reportErrorsServiceSettingsBuilder.reportErrorEventSettings().getRetrySettingsBuilder()
+ * reportErrorsServiceSettingsBuilder.reportErrorEventSettings().getRetrySettings().toBuilder()
  *     .setTotalTimeout(Duration.ofSeconds(30));
  * ReportErrorsServiceStubSettings reportErrorsServiceSettings = reportErrorsServiceSettingsBuilder.build();
  * </code>
@@ -240,6 +240,7 @@ public class ReportErrorsServiceStubSettings extends StubSettings<ReportErrorsSe
           ImmutableList.<UnaryCallSettings.Builder<?, ?>>of(reportErrorEventSettings);
     }
 
+    // NEXT_MAJOR_VER: remove 'throws Exception'
     /**
      * Applies the given settings updater function to all of the unary API methods in this service.
      *

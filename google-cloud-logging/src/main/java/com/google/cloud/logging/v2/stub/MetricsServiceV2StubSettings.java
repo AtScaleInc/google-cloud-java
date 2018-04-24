@@ -76,7 +76,7 @@ import org.threeten.bp.Duration;
  * <code>
  * MetricsServiceV2StubSettings.Builder metricsSettingsBuilder =
  *     MetricsServiceV2StubSettings.newBuilder();
- * metricsSettingsBuilder.getLogMetricSettings().getRetrySettingsBuilder()
+ * metricsSettingsBuilder.getLogMetricSettings().getRetrySettings().toBuilder()
  *     .setTotalTimeout(Duration.ofSeconds(30));
  * MetricsServiceV2StubSettings metricsSettings = metricsSettingsBuilder.build();
  * </code>
@@ -392,6 +392,7 @@ public class MetricsServiceV2StubSettings extends StubSettings<MetricsServiceV2S
               deleteLogMetricSettings);
     }
 
+    // NEXT_MAJOR_VER: remove 'throws Exception'
     /**
      * Applies the given settings updater function to all of the unary API methods in this service.
      *

@@ -79,7 +79,7 @@ import javax.annotation.Generated;
  * <code>
  * FirestoreSettings.Builder firestoreSettingsBuilder =
  *     FirestoreSettings.newBuilder();
- * firestoreSettingsBuilder.updateDocumentSettings().getRetrySettingsBuilder()
+ * firestoreSettingsBuilder.updateDocumentSettings().getRetrySettings().toBuilder()
  *     .setTotalTimeout(Duration.ofSeconds(30));
  * FirestoreSettings firestoreSettings = firestoreSettingsBuilder.build();
  * </code>
@@ -241,6 +241,7 @@ public class FirestoreSettings extends ClientSettings<FirestoreSettings> {
       return ((FirestoreStubSettings.Builder) getStubSettings());
     }
 
+    // NEXT_MAJOR_VER: remove 'throws Exception'
     /**
      * Applies the given settings updater function to all of the unary API methods in this service.
      *

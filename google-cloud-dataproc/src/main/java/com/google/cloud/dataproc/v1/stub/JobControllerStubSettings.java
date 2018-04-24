@@ -77,7 +77,7 @@ import org.threeten.bp.Duration;
  * <code>
  * JobControllerStubSettings.Builder jobControllerSettingsBuilder =
  *     JobControllerStubSettings.newBuilder();
- * jobControllerSettingsBuilder.submitJobSettings().getRetrySettingsBuilder()
+ * jobControllerSettingsBuilder.submitJobSettings().getRetrySettings().toBuilder()
  *     .setTotalTimeout(Duration.ofSeconds(30));
  * JobControllerStubSettings jobControllerSettings = jobControllerSettingsBuilder.build();
  * </code>
@@ -397,6 +397,7 @@ public class JobControllerStubSettings extends StubSettings<JobControllerStubSet
               deleteJobSettings);
     }
 
+    // NEXT_MAJOR_VER: remove 'throws Exception'
     /**
      * Applies the given settings updater function to all of the unary API methods in this service.
      *

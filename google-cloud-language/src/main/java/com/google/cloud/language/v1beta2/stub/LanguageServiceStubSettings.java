@@ -71,7 +71,7 @@ import org.threeten.bp.Duration;
  * <code>
  * LanguageServiceStubSettings.Builder languageServiceSettingsBuilder =
  *     LanguageServiceStubSettings.newBuilder();
- * languageServiceSettingsBuilder.analyzeSentimentSettings().getRetrySettingsBuilder()
+ * languageServiceSettingsBuilder.analyzeSentimentSettings().getRetrySettings().toBuilder()
  *     .setTotalTimeout(Duration.ofSeconds(30));
  * LanguageServiceStubSettings languageServiceSettings = languageServiceSettingsBuilder.build();
  * </code>
@@ -351,6 +351,7 @@ public class LanguageServiceStubSettings extends StubSettings<LanguageServiceStu
               annotateTextSettings);
     }
 
+    // NEXT_MAJOR_VER: remove 'throws Exception'
     /**
      * Applies the given settings updater function to all of the unary API methods in this service.
      *

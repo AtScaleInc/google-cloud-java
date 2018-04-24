@@ -16,18 +16,28 @@
 package com.google.cloud.bigtable.data.v2.stub;
 
 import com.google.api.core.InternalApi;
+import com.google.api.gax.batching.BatchingSettings;
+import com.google.api.gax.batching.FlowControlSettings;
+import com.google.api.gax.batching.FlowController.LimitExceededBehavior;
 import com.google.api.gax.grpc.InstantiatingGrpcChannelProvider;
 import com.google.api.gax.retrying.RetrySettings;
+import com.google.api.gax.rpc.BatchingCallSettings;
 import com.google.api.gax.rpc.ServerStreamingCallSettings;
 import com.google.api.gax.rpc.StatusCode.Code;
 import com.google.api.gax.rpc.StubSettings;
 import com.google.api.gax.rpc.UnaryCallSettings;
-import com.google.bigtable.admin.v2.InstanceName;
-import com.google.cloud.bigtable.data.v2.wrappers.KeyOffset;
-import com.google.cloud.bigtable.data.v2.wrappers.Query;
-import com.google.cloud.bigtable.data.v2.wrappers.Row;
+import com.google.cloud.bigtable.data.v2.models.InstanceName;
+import com.google.cloud.bigtable.data.v2.internal.DummyBatchingDescriptor;
+import com.google.cloud.bigtable.data.v2.models.ConditionalRowMutation;
+import com.google.cloud.bigtable.data.v2.models.KeyOffset;
+import com.google.cloud.bigtable.data.v2.models.Query;
+import com.google.cloud.bigtable.data.v2.models.ReadModifyWriteRow;
+import com.google.cloud.bigtable.data.v2.models.Row;
+import com.google.cloud.bigtable.data.v2.models.RowMutation;
 import com.google.common.base.Preconditions;
+import com.google.common.collect.ImmutableSet;
 import java.util.List;
+import java.util.Set;
 import javax.annotation.Nonnull;
 import org.threeten.bp.Duration;
 
@@ -67,11 +77,30 @@ public class EnhancedBigtableStubSettings extends StubSettings<EnhancedBigtableS
   private static final int MAX_MESSAGE_SIZE = 256 * 1024 * 1024;
   private static final String SERVER_DEFAULT_APP_PROFILE_ID = "";
 
+  private static final Set<Code> DEFAULT_RETRY_CODES =
+      ImmutableSet.of(Code.DEADLINE_EXCEEDED, Code.UNAVAILABLE, Code.ABORTED);
+
+  // Copy of default retrying settings in the yaml
+  private static final RetrySettings DEFAULT_RETRY_SETTINGS =
+      RetrySettings.newBuilder()
+          .setInitialRetryDelay(Duration.ofMillis(100L))
+          .setRetryDelayMultiplier(1.3)
+          .setMaxRetryDelay(Duration.ofMillis(60000L))
+          .setInitialRpcTimeout(Duration.ofMillis(20000L))
+          .setRpcTimeoutMultiplier(1.0)
+          .setMaxRpcTimeout(Duration.ofMillis(20000L))
+          .setTotalTimeout(Duration.ofMillis(600000L))
+          .build();
+
   private final InstanceName instanceName;
   private final String appProfileId;
 
   private final ServerStreamingCallSettings<Query, Row> readRowsSettings;
   private final UnaryCallSettings<String, List<KeyOffset>> sampleRowKeysSettings;
+  private final UnaryCallSettings<RowMutation, Void> mutateRowSettings;
+  private final BatchingCallSettings<RowMutation, Void> mutateRowsSettings;
+  private final UnaryCallSettings<ConditionalRowMutation, Boolean> checkAndMutateRowSettings;
+  private final UnaryCallSettings<ReadModifyWriteRow, Row> readModifyWriteRowSettings;
 
   private EnhancedBigtableStubSettings(Builder builder) {
     super(builder);
@@ -81,6 +110,10 @@ public class EnhancedBigtableStubSettings extends StubSettings<EnhancedBigtableS
     // Per method settings.
     readRowsSettings = builder.readRowsSettings.build();
     sampleRowKeysSettings = builder.sampleRowKeysSettings.build();
+    mutateRowSettings = builder.mutateRowSettings.build();
+    mutateRowsSettings = builder.mutateRowsSettings.build();
+    checkAndMutateRowSettings = builder.checkAndMutateRowSettings.build();
+    readModifyWriteRowSettings = builder.readModifyWriteRowSettings.build();
   }
 
   /** Create a new builder. */
@@ -108,6 +141,26 @@ public class EnhancedBigtableStubSettings extends StubSettings<EnhancedBigtableS
     return sampleRowKeysSettings;
   }
 
+  /** Returns the object with the settings used for calls to MutateRow. */
+  public UnaryCallSettings<RowMutation, Void> mutateRowSettings() {
+    return mutateRowSettings;
+  }
+
+  /** Returns the object with the settings used for calls to MutateRows. */
+  public BatchingCallSettings<RowMutation, Void> mutateRowsSettings() {
+    return mutateRowsSettings;
+  }
+
+  /** Returns the object with the settings used for calls to CheckAndMutateRow. */
+  public UnaryCallSettings<ConditionalRowMutation, Boolean> checkAndMutateRowSettings() {
+    return checkAndMutateRowSettings;
+  }
+
+  /** Returns the object with the settings used for calls to ReadModifyWriteRow. */
+  public UnaryCallSettings<ReadModifyWriteRow, Row> readModifyWriteRowSettings() {
+    return readModifyWriteRowSettings;
+  }
+
   /** Returns a builder containing all the values of this settings class. */
   public Builder toBuilder() {
     return new Builder(this);
@@ -120,6 +173,11 @@ public class EnhancedBigtableStubSettings extends StubSettings<EnhancedBigtableS
 
     private final ServerStreamingCallSettings.Builder<Query, Row> readRowsSettings;
     private final UnaryCallSettings.Builder<String, List<KeyOffset>> sampleRowKeysSettings;
+    private final UnaryCallSettings.Builder<RowMutation, Void> mutateRowSettings;
+    private final BatchingCallSettings.Builder<RowMutation, Void> mutateRowsSettings;
+    private final UnaryCallSettings.Builder<ConditionalRowMutation, Boolean>
+        checkAndMutateRowSettings;
+    private final UnaryCallSettings.Builder<ReadModifyWriteRow, Row> readModifyWriteRowSettings;
 
     /**
      * Initializes a new Builder with sane defaults for all settings.
@@ -143,41 +201,51 @@ public class EnhancedBigtableStubSettings extends StubSettings<EnhancedBigtableS
               .setChannelsPerCpu(2)
               .setMaxInboundMessageSize(MAX_MESSAGE_SIZE)
               .build());
+      setStreamWatchdogCheckInterval(baseDefaults.getStreamWatchdogCheckInterval());
+      setStreamWatchdogProvider(baseDefaults.getStreamWatchdogProvider());
 
       // Per-method settings using baseSettings for defaults.
       readRowsSettings = ServerStreamingCallSettings.newBuilder();
       /* TODO: copy timeouts, retryCodes & retrySettings from baseSettings.readRows once it exists in GAPIC */
       readRowsSettings
-          .setRetryableCodes(Code.DEADLINE_EXCEEDED, Code.UNAVAILABLE, Code.ABORTED)
-          .setTimeoutCheckInterval(Duration.ofSeconds(10))
-          .setIdleTimeout(Duration.ofMinutes(5))
+          .setRetryableCodes(DEFAULT_RETRY_CODES)
           .setRetrySettings(
-              RetrySettings.newBuilder()
-                  .setMaxAttempts(10)
-                  .setTotalTimeout(Duration.ofHours(1))
-                  .setInitialRetryDelay(Duration.ofMillis(100))
-                  .setRetryDelayMultiplier(1.3)
-                  .setMaxRetryDelay(Duration.ofMinutes(1))
-                  .setInitialRpcTimeout(Duration.ofSeconds(20))
-                  .setRpcTimeoutMultiplier(1)
-                  .setMaxRpcTimeout(Duration.ofSeconds(20))
-                  .build());
+              DEFAULT_RETRY_SETTINGS.toBuilder().setTotalTimeout(Duration.ofHours(1)).build())
+          .setIdleTimeout(Duration.ofMinutes(5));
 
       sampleRowKeysSettings = UnaryCallSettings.newUnaryCallSettingsBuilder();
       /* TODO: copy retryCodes & retrySettings from baseSettings.sampleRowKeysSettings once it exists in GAPIC */
       sampleRowKeysSettings
           .setRetryableCodes(Code.DEADLINE_EXCEEDED, Code.UNAVAILABLE, Code.ABORTED)
-          .setRetrySettings(
-              RetrySettings.newBuilder()
-                  .setMaxAttempts(10)
-                  .setTotalTimeout(Duration.ofMinutes(1))
-                  .setInitialRetryDelay(Duration.ofMillis(100))
-                  .setRetryDelayMultiplier(1.3)
-                  .setMaxRetryDelay(Duration.ofMinutes(1))
-                  .setInitialRpcTimeout(Duration.ofSeconds(20))
-                  .setRpcTimeoutMultiplier(1)
-                  .setMaxRpcTimeout(Duration.ofSeconds(20))
-                  .build());
+          .setRetrySettings(DEFAULT_RETRY_SETTINGS);
+
+      mutateRowSettings = UnaryCallSettings.newUnaryCallSettingsBuilder();
+      copyRetrySettings(baseDefaults.mutateRowSettings(), mutateRowSettings);
+
+      /* TODO: copy retryCodes & retrySettings from baseSettings.mutateRows once it exists in GAPIC */
+      mutateRowsSettings =
+          BatchingCallSettings.newBuilder(new DummyBatchingDescriptor<RowMutation, Void>())
+              .setRetryableCodes(DEFAULT_RETRY_CODES)
+              .setRetrySettings(DEFAULT_RETRY_SETTINGS)
+              .setBatchingSettings(
+                  BatchingSettings.newBuilder()
+                      .setIsEnabled(true)
+                      .setElementCountThreshold(100L)
+                      .setRequestByteThreshold(20L * 1024 * 1024)
+                      .setDelayThreshold(Duration.ofSeconds(1))
+                      .setFlowControlSettings(
+                          FlowControlSettings.newBuilder()
+                              .setLimitExceededBehavior(LimitExceededBehavior.Block)
+                              .setMaxOutstandingRequestBytes(100L * 1024 * 1024)
+                              .setMaxOutstandingElementCount(1_000L)
+                              .build())
+                      .build());
+
+      checkAndMutateRowSettings = UnaryCallSettings.newUnaryCallSettingsBuilder();
+      copyRetrySettings(baseDefaults.checkAndMutateRowSettings(), checkAndMutateRowSettings);
+
+      readModifyWriteRowSettings = UnaryCallSettings.newUnaryCallSettingsBuilder();
+      copyRetrySettings(baseDefaults.readModifyWriteRowSettings(), readModifyWriteRowSettings);
     }
 
     private Builder(EnhancedBigtableStubSettings settings) {
@@ -188,9 +256,13 @@ public class EnhancedBigtableStubSettings extends StubSettings<EnhancedBigtableS
       // Per method settings.
       readRowsSettings = settings.readRowsSettings.toBuilder();
       sampleRowKeysSettings = settings.sampleRowKeysSettings.toBuilder();
+      mutateRowSettings = settings.mutateRowSettings.toBuilder();
+      mutateRowsSettings = settings.mutateRowsSettings.toBuilder();
+      checkAndMutateRowSettings = settings.checkAndMutateRowSettings.toBuilder();
+      readModifyWriteRowSettings = settings.readModifyWriteRowSettings.toBuilder();
     }
-
     // <editor-fold desc="Private Helpers">
+
     /**
      * Copies settings from unary RPC to another. This is necessary when modifying request and
      * response types while trying to retain retry settings.
@@ -243,6 +315,26 @@ public class EnhancedBigtableStubSettings extends StubSettings<EnhancedBigtableS
     /** Returns the builder for the settings used for calls to SampleRowKeysSettings. */
     public UnaryCallSettings.Builder<String, List<KeyOffset>> sampleRowKeysSettings() {
       return sampleRowKeysSettings;
+    }
+
+    /** Returns the builder for the settings used for calls to MutateRow. */
+    public UnaryCallSettings.Builder<RowMutation, Void> mutateRowSettings() {
+      return mutateRowSettings;
+    }
+
+    /** Returns the builder for the settings used for calls to MutateTows. */
+    public BatchingCallSettings.Builder<RowMutation, Void> mutateRowsSettings() {
+      return mutateRowsSettings;
+    }
+
+    /** Returns the builder for the settings used for calls to CheckAndMutateRow. */
+    public UnaryCallSettings.Builder<ConditionalRowMutation, Boolean> checkAndMutateRowSettings() {
+      return checkAndMutateRowSettings;
+    }
+
+    /** Returns the builder with the settings used for calls to ReadModifyWriteRow. */
+    public UnaryCallSettings.Builder<ReadModifyWriteRow, Row> readModifyWriteRowSettings() {
+      return readModifyWriteRowSettings;
     }
 
     @SuppressWarnings("unchecked")

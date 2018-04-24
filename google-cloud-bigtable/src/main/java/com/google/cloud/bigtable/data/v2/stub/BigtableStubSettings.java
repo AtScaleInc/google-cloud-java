@@ -72,7 +72,7 @@ import org.threeten.bp.Duration;
  * <code>
  * BigtableStubSettings.Builder baseBigtableDataSettingsBuilder =
  *     BigtableStubSettings.newBuilder();
- * baseBigtableDataSettingsBuilder.mutateRowSettings().getRetrySettingsBuilder()
+ * baseBigtableDataSettingsBuilder.mutateRowSettings().getRetrySettings().toBuilder()
  *     .setTotalTimeout(Duration.ofSeconds(30));
  * BigtableStubSettings baseBigtableDataSettings = baseBigtableDataSettingsBuilder.build();
  * </code>
@@ -300,7 +300,7 @@ public class BigtableStubSettings extends StubSettings<BigtableStubSettings> {
 
       builder
           .mutateRowSettings()
-          .setRetryableCodes(RETRYABLE_CODE_DEFINITIONS.get("non_idempotent"))
+          .setRetryableCodes(RETRYABLE_CODE_DEFINITIONS.get("idempotent"))
           .setRetrySettings(RETRY_PARAM_DEFINITIONS.get("default"));
 
       builder
@@ -331,6 +331,7 @@ public class BigtableStubSettings extends StubSettings<BigtableStubSettings> {
               mutateRowSettings, checkAndMutateRowSettings, readModifyWriteRowSettings);
     }
 
+    // NEXT_MAJOR_VER: remove 'throws Exception'
     /**
      * Applies the given settings updater function to all of the unary API methods in this service.
      *

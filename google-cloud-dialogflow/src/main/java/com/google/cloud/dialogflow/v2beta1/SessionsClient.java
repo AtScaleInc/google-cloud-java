@@ -27,9 +27,10 @@ import javax.annotation.Generated;
 
 // AUTO-GENERATED DOCUMENTATION AND SERVICE
 /**
- * Service Description: Manages user sessions.
- *
- * <p>#
+ * Service Description: A session represents an interaction with a user. You retrieve user input and
+ * pass it to the [DetectIntent][google.cloud.dialogflow.v2beta1.Sessions.DetectIntent] (or
+ * [StreamingDetectIntent][google.cloud.dialogflow.v2beta1.Sessions.StreamingDetectIntent]) method
+ * to determine user intent and respond.
  *
  * <p>This class provides the ability to make remote calls to the backing service through method
  * calls that map to API methods. Sample code to get started:
@@ -164,11 +165,13 @@ public class SessionsClient implements BackgroundResource {
    *
    * @param session Required. The name of the session this query is sent to. Format:
    *     `projects/&lt;Project ID&gt;/agent/sessions/&lt;Session ID&gt;`, or `projects/&lt;Project
-   *     ID&gt;/agent/runtimes/&lt;Runtime ID&gt;/sessions/&lt;Session ID&gt;`. Note: Runtimes are
-   *     under construction and will be available soon. If &lt;Runtime ID&gt; is not specified, we
-   *     assume default 'sandbox' runtime. It's up to the API caller to choose an appropriate
-   *     session ID. It can be a random number or some type of user identifier (preferably hashed).
-   *     The length of the session ID must not exceed 36 bytes.
+   *     ID&gt;/agent/environments/&lt;Environment ID&gt;/users/&lt;User ID&gt;/sessions/&lt;Session
+   *     ID&gt;`. Note: Environments and users are under construction and will be available soon. If
+   *     &lt;Environment ID&gt; is not specified, we assume default 'draft' environment. If &lt;User
+   *     ID&gt; is not specified, we are using "-". It’s up to the API caller to choose an
+   *     appropriate &lt;Session ID&gt;. and &lt;User Id&gt;. They can be a random numbers or some
+   *     type of user and session identifiers (preferably hashed). The length of the &lt;Session
+   *     ID&gt; and &lt;User ID&gt; must not exceed 36 characters.
    * @param queryInput Required. The input specification. It can be set to:
    *     <p>1. an audio config which instructs the speech recognizer how to process the speech
    *     audio,
@@ -180,9 +183,48 @@ public class SessionsClient implements BackgroundResource {
 
     DetectIntentRequest request =
         DetectIntentRequest.newBuilder()
-            .setSession(session.toString())
+            .setSession(session == null ? null : session.toString())
             .setQueryInput(queryInput)
             .build();
+    return detectIntent(request);
+  }
+
+  // AUTO-GENERATED DOCUMENTATION AND METHOD
+  /**
+   * Processes a natural language query and returns structured, actionable data as a result. This
+   * method is not idempotent, because it may cause contexts and session entity types to be updated,
+   * which in turn might affect results of future queries.
+   *
+   * <p>Sample code:
+   *
+   * <pre><code>
+   * try (SessionsClient sessionsClient = SessionsClient.create()) {
+   *   SessionName session = SessionName.of("[PROJECT]", "[SESSION]");
+   *   QueryInput queryInput = QueryInput.newBuilder().build();
+   *   DetectIntentResponse response = sessionsClient.detectIntent(session.toString(), queryInput);
+   * }
+   * </code></pre>
+   *
+   * @param session Required. The name of the session this query is sent to. Format:
+   *     `projects/&lt;Project ID&gt;/agent/sessions/&lt;Session ID&gt;`, or `projects/&lt;Project
+   *     ID&gt;/agent/environments/&lt;Environment ID&gt;/users/&lt;User ID&gt;/sessions/&lt;Session
+   *     ID&gt;`. Note: Environments and users are under construction and will be available soon. If
+   *     &lt;Environment ID&gt; is not specified, we assume default 'draft' environment. If &lt;User
+   *     ID&gt; is not specified, we are using "-". It’s up to the API caller to choose an
+   *     appropriate &lt;Session ID&gt;. and &lt;User Id&gt;. They can be a random numbers or some
+   *     type of user and session identifiers (preferably hashed). The length of the &lt;Session
+   *     ID&gt; and &lt;User ID&gt; must not exceed 36 characters.
+   * @param queryInput Required. The input specification. It can be set to:
+   *     <p>1. an audio config which instructs the speech recognizer how to process the speech
+   *     audio,
+   *     <p>2. a conversational query in the form of text, or
+   *     <p>3. an event that specifies which intent to trigger.
+   * @throws com.google.api.gax.rpc.ApiException if the remote call fails
+   */
+  public final DetectIntentResponse detectIntent(String session, QueryInput queryInput) {
+
+    DetectIntentRequest request =
+        DetectIntentRequest.newBuilder().setSession(session).setQueryInput(queryInput).build();
     return detectIntent(request);
   }
 
@@ -285,7 +327,7 @@ public class SessionsClient implements BackgroundResource {
   }
 
   @Override
-  public final void close() throws Exception {
+  public final void close() {
     stub.close();
   }
 

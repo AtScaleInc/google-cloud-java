@@ -54,7 +54,7 @@ import javax.annotation.Generated;
  * <code>
  * ContextsSettings.Builder contextsSettingsBuilder =
  *     ContextsSettings.newBuilder();
- * contextsSettingsBuilder.getContextSettings().getRetrySettingsBuilder()
+ * contextsSettingsBuilder.getContextSettings().getRetrySettings().toBuilder()
  *     .setTotalTimeout(Duration.ofSeconds(30));
  * ContextsSettings contextsSettings = contextsSettingsBuilder.build();
  * </code>
@@ -177,6 +177,7 @@ public class ContextsSettings extends ClientSettings<ContextsSettings> {
       return ((ContextsStubSettings.Builder) getStubSettings());
     }
 
+    // NEXT_MAJOR_VER: remove 'throws Exception'
     /**
      * Applies the given settings updater function to all of the unary API methods in this service.
      *

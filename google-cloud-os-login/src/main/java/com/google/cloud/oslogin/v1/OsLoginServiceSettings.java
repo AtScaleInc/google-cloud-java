@@ -52,7 +52,7 @@ import javax.annotation.Generated;
  * <code>
  * OsLoginServiceSettings.Builder osLoginServiceSettingsBuilder =
  *     OsLoginServiceSettings.newBuilder();
- * osLoginServiceSettingsBuilder.deletePosixAccountSettings().getRetrySettingsBuilder()
+ * osLoginServiceSettingsBuilder.deletePosixAccountSettings().getRetrySettings().toBuilder()
  *     .setTotalTimeout(Duration.ofSeconds(30));
  * OsLoginServiceSettings osLoginServiceSettings = osLoginServiceSettingsBuilder.build();
  * </code>
@@ -176,6 +176,7 @@ public class OsLoginServiceSettings extends ClientSettings<OsLoginServiceSetting
       return ((OsLoginServiceStubSettings.Builder) getStubSettings());
     }
 
+    // NEXT_MAJOR_VER: remove 'throws Exception'
     /**
      * Applies the given settings updater function to all of the unary API methods in this service.
      *

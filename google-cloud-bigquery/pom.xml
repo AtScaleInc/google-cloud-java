@@ -3,7 +3,7 @@
   <modelVersion>4.0.0</modelVersion>
   <groupId>com.atscale.engine.deps.google</groupId>
   <artifactId>google-cloud-bigquery</artifactId>
-  <version>0.35.0-beta</version>
+  <version>1.27.0</version><!-- {x-version-update:google-cloud-bigquery:current} -->
   <packaging>jar</packaging>
   <name>Google Cloud BigQuery</name>
   <url>https://github.com/GoogleCloudPlatform/google-cloud-java/tree/master/google-cloud-bigquery</url>
@@ -13,7 +13,7 @@
   <parent>
     <groupId>com.google.cloud</groupId>
     <artifactId>google-cloud-pom</artifactId>
-    <version>0.35.0-alpha</version>
+    <version>0.45.0-alpha</version><!-- {x-version-update:google-cloud-pom:current} -->
   </parent>
   <properties>
     <site.installationModule>google-cloud-bigquery</site.installationModule>
@@ -72,11 +72,6 @@
     <dependency>
       <groupId>org.objenesis</groupId>
       <artifactId>objenesis</artifactId>
-      <scope>test</scope>
-    </dependency>
-    <dependency>
-      <groupId>com.google.truth</groupId>
-      <artifactId>truth</artifactId>
       <scope>test</scope>
     </dependency>
   </dependencies>

@@ -82,7 +82,7 @@ import org.threeten.bp.Duration;
  * <code>
  * DlpServiceStubSettings.Builder dlpServiceSettingsBuilder =
  *     DlpServiceStubSettings.newBuilder();
- * dlpServiceSettingsBuilder.inspectContentSettings().getRetrySettingsBuilder()
+ * dlpServiceSettingsBuilder.inspectContentSettings().getRetrySettings().toBuilder()
  *     .setTotalTimeout(Duration.ofSeconds(30));
  * DlpServiceStubSettings dlpServiceSettings = dlpServiceSettingsBuilder.build();
  * </code>
@@ -492,6 +492,7 @@ public class DlpServiceStubSettings extends StubSettings<DlpServiceStubSettings>
               listRootCategoriesSettings);
     }
 
+    // NEXT_MAJOR_VER: remove 'throws Exception'
     /**
      * Applies the given settings updater function to all of the unary API methods in this service.
      *

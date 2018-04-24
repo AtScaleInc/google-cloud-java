@@ -17,10 +17,10 @@ package com.google.cloud.bigtable.data.v2.internal;
 
 import com.google.api.core.InternalApi;
 import com.google.auto.value.AutoValue;
-import com.google.bigtable.admin.v2.InstanceName;
+import com.google.cloud.bigtable.data.v2.models.InstanceName;
 
 /**
- * Contains information necessary to construct Bigtable protobuf requests from user facing wrappers.
+ * Contains information necessary to construct Bigtable protobuf requests from user facing models.
  *
  * <p>The intention is to extract repetitive details like instance names and app profiles into a
  * configurable values in {@link com.google.cloud.bigtable.data.v2.BigtableDataSettings} and expose

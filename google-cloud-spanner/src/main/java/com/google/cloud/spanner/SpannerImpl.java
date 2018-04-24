@@ -244,6 +244,7 @@ class SpannerImpl extends BaseService<SpannerOptions> implements Spanner {
     }
   }
 
+  // TODO(user): change this to return SessionImpl and modify all corresponding references.
   Session createSession(final DatabaseId db) throws SpannerException {
     final Map<SpannerRpc.Option, ?> options =
         optionMap(SessionOption.channelHint(random.nextLong()));
@@ -263,6 +264,12 @@ class SpannerImpl extends BaseService<SpannerOptions> implements Spanner {
       TraceUtil.endSpanWithFailure(span, e);
       throw e;
     }
+  }
+
+  SessionImpl sessionWithId(String name) {
+    final Map<SpannerRpc.Option, ?> options =
+        SpannerImpl.optionMap(SessionOption.channelHint(random.nextLong()));
+    return new SessionImpl(name, options);
   }
 
   @Override
@@ -288,6 +295,11 @@ class SpannerImpl extends BaseService<SpannerOptions> implements Spanner {
         return dbClient;
       }
     }
+  }
+
+  @Override
+  public BatchClient getBatchClient(DatabaseId db) {
+    return new BatchClientImpl(db, SpannerImpl.this);
   }
 
   @Override
@@ -740,6 +752,10 @@ class SpannerImpl extends BaseService<SpannerOptions> implements Spanner {
       return name;
     }
 
+    Map<SpannerRpc.Option, ?> getOptions() {
+      return options;
+    }
+
     @Override
     public Timestamp write(Iterable<Mutation> mutations) throws SpannerException {
       TransactionRunner runner = readWriteTransaction();
@@ -882,13 +898,24 @@ class SpannerImpl extends BaseService<SpannerOptions> implements Spanner {
       }
     }
 
-    private <T extends SessionTransaction> T setActive(@Nullable T ctx) {
+    TransactionContextImpl newTransaction() {
+      TransactionContextImpl txn = new TransactionContextImpl(this, readyTransactionId, rpc,
+          defaultPrefetchChunks);
+      return txn;
+    }
+    
+    <T extends SessionTransaction> T setActive(@Nullable T ctx) {
       if (activeTransaction != null) {
         activeTransaction.invalidate();
       }
       activeTransaction = ctx;
       readyTransactionId = null;
       return ctx;
+    }
+
+    @Override
+    public TransactionManager transactionManager() {
+      return new TransactionManagerImpl(this);
     }
   }
 
@@ -898,12 +925,12 @@ class SpannerImpl extends BaseService<SpannerOptions> implements Spanner {
    * transactions, and read-write transactions. The defining characteristic is that a session may
    * only have one such transaction active at a time.
    */
-  private interface SessionTransaction {
+  static interface SessionTransaction {
     /** Invalidates the transaction, generally because a new one has been started on the session. */
     void invalidate();
   }
 
-  private abstract static class AbstractReadContext
+  abstract static class AbstractReadContext
       implements ReadContext, AbstractResultSet.Listener, SessionTransaction {
     final Object lock = new Object();
     final SessionImpl session;
@@ -916,9 +943,9 @@ class SpannerImpl extends BaseService<SpannerOptions> implements Spanner {
 
     @GuardedBy("lock")
     private boolean isClosed = false;
-    // Allow up to 2GB to be buffered (assuming 1MB chunks), which is larger than the largest
-    // possible row.  In practice, restart tokens are sent much more frequently.
-    private static final int MAX_BUFFERED_CHUNKS = 2048;
+    // Allow up to 512MB to be buffered (assuming 1MB chunks). In practice, restart tokens are sent
+    // much more frequently.
+    private static final int MAX_BUFFERED_CHUNKS = 512;
 
     private AbstractReadContext(SessionImpl session, SpannerRpc rpc, int defaultPrefetchChunks) {
       this(session, rpc, defaultPrefetchChunks, Tracing.getTracer().getCurrentSpan());
@@ -987,12 +1014,22 @@ class SpannerImpl extends BaseService<SpannerOptions> implements Spanner {
         Statement statement,
         com.google.spanner.v1.ExecuteSqlRequest.QueryMode queryMode,
         QueryOption... options) {
+      Options readOptions = Options.fromQueryOptions(options);
+      return executeQueryInternalWithOptions(
+          statement, queryMode, readOptions, null /*partitionToken*/);
+    }
+
+    ResultSet executeQueryInternalWithOptions(
+        Statement statement,
+        com.google.spanner.v1.ExecuteSqlRequest.QueryMode queryMode,
+        Options readOptions,
+        ByteString partitionToken) {
       beforeReadOrQuery();
       ExecuteSqlRequest.Builder builder =
           ExecuteSqlRequest.newBuilder()
               .setSql(statement.getSql())
               .setQueryMode(queryMode)
-              .setSession(session.name);
+              .setSession(session.getName());
       Map<String, Value> stmtParameters = statement.getParameters();
       if (!stmtParameters.isEmpty()) {
         com.google.protobuf.Struct.Builder paramsBuilder = builder.getParamsBuilder();
@@ -1005,8 +1042,10 @@ class SpannerImpl extends BaseService<SpannerOptions> implements Spanner {
       if (selector != null) {
         builder.setTransaction(selector);
       }
+      if (partitionToken != null) {
+        builder.setPartitionToken(partitionToken);
+      }
       final ExecuteSqlRequest request = builder.build();
-      Options readOptions = Options.fromQueryOptions(options);
       final int prefetchChunks =
           readOptions.hasPrefetchChunks() ? readOptions.prefetchChunks() : defaultPrefetchChunks;
       ResumableStreamIterator stream =
@@ -1086,13 +1125,24 @@ class SpannerImpl extends BaseService<SpannerOptions> implements Spanner {
         KeySet keys,
         Iterable<String> columns,
         ReadOption... options) {
+      Options readOptions = Options.fromReadOptions(options);
+      return readInternalWithOptions(
+          table, index, keys, columns, readOptions, null /*partitionToken*/);
+    }
+
+    ResultSet readInternalWithOptions(
+        String table,
+        @Nullable String index,
+        KeySet keys,
+        Iterable<String> columns,
+        Options readOptions,
+        ByteString partitionToken) {
       beforeReadOrQuery();
       ReadRequest.Builder builder =
           ReadRequest.newBuilder()
               .setSession(session.name)
               .setTable(checkNotNull(table))
               .addAllColumns(columns);
-      Options readOptions = Options.fromReadOptions(options);
       if (readOptions.hasLimit()) {
         builder.setLimit(readOptions.limit());
       }
@@ -1104,6 +1154,9 @@ class SpannerImpl extends BaseService<SpannerOptions> implements Spanner {
       TransactionSelector selector = getTransactionSelector();
       if (selector != null) {
         builder.setTransaction(selector);
+      }
+      if (partitionToken != null) {
+        builder.setPartitionToken(partitionToken);
       }
       final ReadRequest request = builder.build();
       final int prefetchChunks =
@@ -1175,10 +1228,7 @@ class SpannerImpl extends BaseService<SpannerOptions> implements Spanner {
       this.session = session;
       this.sleeper = sleeper;
       this.span = Tracing.getTracer().getCurrentSpan();
-      ByteString transactionId = session.readyTransactionId;
-      session.readyTransactionId = null;
-      this.txn = new TransactionContextImpl(session, transactionId, rpc, defaultPrefetchChunks,
-          span);
+      this.txn = session.newTransaction();
     }
 
     TransactionRunnerImpl(SessionImpl session, SpannerRpc rpc, int defaultPrefetchChunks) {
@@ -1188,7 +1238,7 @@ class SpannerImpl extends BaseService<SpannerOptions> implements Spanner {
     @Nullable
     @Override
     public <T> T run(TransactionCallable<T> callable) {
-      try {
+      try (Scope s = tracer.withSpan(span)) {
         return runInternal(callable);
       } catch (RuntimeException e) {
         TraceUtil.endSpanWithFailure(span, e);
@@ -1202,6 +1252,7 @@ class SpannerImpl extends BaseService<SpannerOptions> implements Spanner {
       BackOff backoff = newBackOff();
       final Context context = Context.current();
       int attempt = 0;
+      // TODO: Change this to use TransactionManager.
       while (true) {
         checkState(
             isValid, "TransactionRunner has been invalidated by a new operation on the session");
@@ -1276,7 +1327,7 @@ class SpannerImpl extends BaseService<SpannerOptions> implements Spanner {
 
     private void backoff(Context context, BackOff backoff) {
       long delay = txn.getRetryDelayInMillis(backoff);
-      txn = new TransactionContextImpl(session, null, txn.rpc, txn.defaultPrefetchChunks, span);
+      txn = session.newTransaction();
       span.addAnnotation("Backing off",
           ImmutableMap.of("Delay", AttributeValue.longAttributeValue(delay)));
       sleeper.backoffSleep(context, delay);
@@ -1302,9 +1353,8 @@ class SpannerImpl extends BaseService<SpannerOptions> implements Spanner {
         SessionImpl session,
         @Nullable ByteString transactionId,
         SpannerRpc rpc,
-        int defaultPrefetchChunks,
-        Span span) {
-      super(session, rpc, defaultPrefetchChunks, span);
+        int defaultPrefetchChunks) {
+      super(session, rpc, defaultPrefetchChunks);
       this.transactionId = transactionId;
     }
 
@@ -1544,9 +1594,9 @@ class SpannerImpl extends BaseService<SpannerOptions> implements Spanner {
     }
   }
 
-  private class MultiUseReadOnlyTransaction extends AbstractReadContext
+  static class MultiUseReadOnlyTransaction extends AbstractReadContext
       implements ReadOnlyTransaction {
-    private final TimestampBound bound;
+    private TimestampBound bound;
     private final Object txnLock = new Object();
 
     @GuardedBy("txnLock")
@@ -1555,7 +1605,7 @@ class SpannerImpl extends BaseService<SpannerOptions> implements Spanner {
     @GuardedBy("txnLock")
     private ByteString transactionId;
 
-    private MultiUseReadOnlyTransaction(
+    MultiUseReadOnlyTransaction(
         SessionImpl session, TimestampBound bound, SpannerRpc rpc, int defaultPrefetchChunks) {
       super(session, rpc, defaultPrefetchChunks);
       checkArgument(
@@ -1565,6 +1615,17 @@ class SpannerImpl extends BaseService<SpannerOptions> implements Spanner {
               + " Create a single-use read or read-only transaction instead.",
           bound.getMode());
       this.bound = bound;
+    }
+
+    MultiUseReadOnlyTransaction(
+        SessionImpl session,
+        ByteString transactionId,
+        Timestamp timestamp,
+        SpannerRpc rpc,
+        int defaultPrefetchChunks) {
+      super(session, rpc, defaultPrefetchChunks);
+      this.transactionId = transactionId;
+      this.timestamp = timestamp;
     }
 
     @Override
@@ -1592,7 +1653,13 @@ class SpannerImpl extends BaseService<SpannerOptions> implements Spanner {
       }
     }
 
-    private void initTransaction() {
+    ByteString getTransactionId() {
+      synchronized (txnLock) {
+        return transactionId;
+      }
+    }
+
+    void initTransaction() {
       // Since we only support synchronous calls, just block on "txnLock" while the RPC is in
       // flight.  Note that we use the strategy of sending an explicit BeginTransaction() RPC,
       // rather than using the first read in the transaction to begin it implicitly.  The chosen
@@ -1883,7 +1950,7 @@ class SpannerImpl extends BaseService<SpannerOptions> implements Spanner {
             builder.set(fieldName).to((Date) value);
             break;
           case ARRAY:
-            switch(fieldType.getArrayElementType().getCode()) {
+            switch (fieldType.getArrayElementType().getCode()) {
               case BOOL:
                 builder.set(fieldName).toBoolArray((Iterable<Boolean>) value);
                 break;

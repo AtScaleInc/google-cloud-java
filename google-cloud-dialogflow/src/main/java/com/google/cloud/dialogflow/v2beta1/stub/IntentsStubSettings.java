@@ -85,7 +85,7 @@ import org.threeten.bp.Duration;
  * <code>
  * IntentsStubSettings.Builder intentsSettingsBuilder =
  *     IntentsStubSettings.newBuilder();
- * intentsSettingsBuilder.getIntentSettings().getRetrySettingsBuilder()
+ * intentsSettingsBuilder.getIntentSettings().getRetrySettings().toBuilder()
  *     .setTotalTimeout(Duration.ofSeconds(30));
  * IntentsStubSettings intentsSettings = intentsSettingsBuilder.build();
  * </code>
@@ -505,6 +505,7 @@ public class IntentsStubSettings extends StubSettings<IntentsStubSettings> {
               batchDeleteIntentsSettings);
     }
 
+    // NEXT_MAJOR_VER: remove 'throws Exception'
     /**
      * Applies the given settings updater function to all of the unary API methods in this service.
      *

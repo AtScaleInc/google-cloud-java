@@ -58,7 +58,7 @@ import javax.annotation.Generated;
  * <code>
  * DataTransferServiceSettings.Builder dataTransferServiceSettingsBuilder =
  *     DataTransferServiceSettings.newBuilder();
- * dataTransferServiceSettingsBuilder.getDataSourceSettings().getRetrySettingsBuilder()
+ * dataTransferServiceSettingsBuilder.getDataSourceSettings().getRetrySettings().toBuilder()
  *     .setTotalTimeout(Duration.ofSeconds(30));
  * DataTransferServiceSettings dataTransferServiceSettings = dataTransferServiceSettingsBuilder.build();
  * </code>
@@ -228,6 +228,7 @@ public class DataTransferServiceSettings extends ClientSettings<DataTransferServ
       return ((DataTransferServiceStubSettings.Builder) getStubSettings());
     }
 
+    // NEXT_MAJOR_VER: remove 'throws Exception'
     /**
      * Applies the given settings updater function to all of the unary API methods in this service.
      *

@@ -54,7 +54,7 @@ import javax.annotation.Generated;
  * <code>
  * ErrorGroupServiceSettings.Builder errorGroupServiceSettingsBuilder =
  *     ErrorGroupServiceSettings.newBuilder();
- * errorGroupServiceSettingsBuilder.getGroupSettings().getRetrySettingsBuilder()
+ * errorGroupServiceSettingsBuilder.getGroupSettings().getRetrySettings().toBuilder()
  *     .setTotalTimeout(Duration.ofSeconds(30));
  * ErrorGroupServiceSettings errorGroupServiceSettings = errorGroupServiceSettingsBuilder.build();
  * </code>
@@ -157,6 +157,7 @@ public class ErrorGroupServiceSettings extends ClientSettings<ErrorGroupServiceS
       return ((ErrorGroupServiceStubSettings.Builder) getStubSettings());
     }
 
+    // NEXT_MAJOR_VER: remove 'throws Exception'
     /**
      * Applies the given settings updater function to all of the unary API methods in this service.
      *

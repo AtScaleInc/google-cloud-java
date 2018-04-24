@@ -42,12 +42,12 @@ import com.google.pubsub.v1.ListTopicSubscriptionsResponse;
 import com.google.pubsub.v1.ListTopicsRequest;
 import com.google.pubsub.v1.ListTopicsResponse;
 import com.google.pubsub.v1.ProjectName;
+import com.google.pubsub.v1.ProjectSubscriptionName;
+import com.google.pubsub.v1.ProjectTopicName;
 import com.google.pubsub.v1.PublishRequest;
 import com.google.pubsub.v1.PublishResponse;
 import com.google.pubsub.v1.PubsubMessage;
-import com.google.pubsub.v1.SubscriptionName;
 import com.google.pubsub.v1.Topic;
-import com.google.pubsub.v1.TopicName;
 import com.google.pubsub.v1.UpdateTopicRequest;
 import java.io.IOException;
 import java.util.List;
@@ -67,7 +67,7 @@ import javax.annotation.Generated;
  * <pre>
  * <code>
  * try (TopicAdminClient topicAdminClient = TopicAdminClient.create()) {
- *   TopicName name = TopicName.of("[PROJECT]", "[TOPIC]");
+ *   ProjectTopicName name = ProjectTopicName.of("[PROJECT]", "[TOPIC]");
  *   Topic response = topicAdminClient.createTopic(name);
  * }
  * </code>
@@ -183,7 +183,7 @@ public class TopicAdminClient implements BackgroundResource {
    *
    * <pre><code>
    * try (TopicAdminClient topicAdminClient = TopicAdminClient.create()) {
-   *   TopicName name = TopicName.of("[PROJECT]", "[TOPIC]");
+   *   ProjectTopicName name = ProjectTopicName.of("[PROJECT]", "[TOPIC]");
    *   Topic response = topicAdminClient.createTopic(name);
    * }
    * </code></pre>
@@ -195,9 +195,9 @@ public class TopicAdminClient implements BackgroundResource {
    *     length, and it must not start with `"goog"`.
    * @throws com.google.api.gax.rpc.ApiException if the remote call fails
    */
-  public final Topic createTopic(TopicName name) {
+  public final Topic createTopic(ProjectTopicName name) {
 
-    Topic request = Topic.newBuilder().setName(name.toString()).build();
+    Topic request = Topic.newBuilder().setName(name == null ? null : name.toString()).build();
     return createTopic(request);
   }
 
@@ -209,7 +209,33 @@ public class TopicAdminClient implements BackgroundResource {
    *
    * <pre><code>
    * try (TopicAdminClient topicAdminClient = TopicAdminClient.create()) {
-   *   TopicName name = TopicName.of("[PROJECT]", "[TOPIC]");
+   *   ProjectTopicName name = ProjectTopicName.of("[PROJECT]", "[TOPIC]");
+   *   Topic response = topicAdminClient.createTopic(name.toString());
+   * }
+   * </code></pre>
+   *
+   * @param name The name of the topic. It must have the format
+   *     `"projects/{project}/topics/{topic}"`. `{topic}` must start with a letter, and contain only
+   *     letters (`[A-Za-z]`), numbers (`[0-9]`), dashes (`-`), underscores (`_`), periods (`.`),
+   *     tildes (`~`), plus (`+`) or percent signs (`%`). It must be between 3 and 255 characters in
+   *     length, and it must not start with `"goog"`.
+   * @throws com.google.api.gax.rpc.ApiException if the remote call fails
+   */
+  public final Topic createTopic(String name) {
+
+    Topic request = Topic.newBuilder().setName(name).build();
+    return createTopic(request);
+  }
+
+  // AUTO-GENERATED DOCUMENTATION AND METHOD
+  /**
+   * Creates the given topic with the given name.
+   *
+   * <p>Sample code:
+   *
+   * <pre><code>
+   * try (TopicAdminClient topicAdminClient = TopicAdminClient.create()) {
+   *   ProjectTopicName name = ProjectTopicName.of("[PROJECT]", "[TOPIC]");
    *   Topic request = Topic.newBuilder()
    *     .setName(name.toString())
    *     .build();
@@ -232,7 +258,7 @@ public class TopicAdminClient implements BackgroundResource {
    *
    * <pre><code>
    * try (TopicAdminClient topicAdminClient = TopicAdminClient.create()) {
-   *   TopicName name = TopicName.of("[PROJECT]", "[TOPIC]");
+   *   ProjectTopicName name = ProjectTopicName.of("[PROJECT]", "[TOPIC]");
    *   Topic request = Topic.newBuilder()
    *     .setName(name.toString())
    *     .build();
@@ -311,7 +337,7 @@ public class TopicAdminClient implements BackgroundResource {
    *
    * <pre><code>
    * try (TopicAdminClient topicAdminClient = TopicAdminClient.create()) {
-   *   TopicName topic = TopicName.of("[PROJECT]", "[TOPIC]");
+   *   ProjectTopicName topic = ProjectTopicName.of("[PROJECT]", "[TOPIC]");
    *   ByteString data = ByteString.copyFromUtf8("");
    *   PubsubMessage messagesElement = PubsubMessage.newBuilder()
    *     .setData(data)
@@ -327,10 +353,13 @@ public class TopicAdminClient implements BackgroundResource {
    * @throws com.google.api.gax.rpc.ApiException if the remote call fails
    */
   /* package-private */ final PublishResponse publish(
-      TopicName topic, List<PubsubMessage> messages) {
+      ProjectTopicName topic, List<PubsubMessage> messages) {
 
     PublishRequest request =
-        PublishRequest.newBuilder().setTopic(topic.toString()).addAllMessages(messages).build();
+        PublishRequest.newBuilder()
+            .setTopic(topic == null ? null : topic.toString())
+            .addAllMessages(messages)
+            .build();
     return publish(request);
   }
 
@@ -344,7 +373,39 @@ public class TopicAdminClient implements BackgroundResource {
    *
    * <pre><code>
    * try (TopicAdminClient topicAdminClient = TopicAdminClient.create()) {
-   *   TopicName topic = TopicName.of("[PROJECT]", "[TOPIC]");
+   *   ProjectTopicName topic = ProjectTopicName.of("[PROJECT]", "[TOPIC]");
+   *   ByteString data = ByteString.copyFromUtf8("");
+   *   PubsubMessage messagesElement = PubsubMessage.newBuilder()
+   *     .setData(data)
+   *     .build();
+   *   List&lt;PubsubMessage&gt; messages = Arrays.asList(messagesElement);
+   *   PublishResponse response = topicAdminClient.publish(topic.toString(), messages);
+   * }
+   * </code></pre>
+   *
+   * @param topic The messages in the request will be published on this topic. Format is
+   *     `projects/{project}/topics/{topic}`.
+   * @param messages The messages to publish.
+   * @throws com.google.api.gax.rpc.ApiException if the remote call fails
+   */
+  /* package-private */ final PublishResponse publish(String topic, List<PubsubMessage> messages) {
+
+    PublishRequest request =
+        PublishRequest.newBuilder().setTopic(topic).addAllMessages(messages).build();
+    return publish(request);
+  }
+
+  // AUTO-GENERATED DOCUMENTATION AND METHOD
+  /**
+   * Adds one or more messages to the topic. Returns `NOT_FOUND` if the topic does not exist. The
+   * message payload must not be empty; it must contain either a non-empty data field, or at least
+   * one attribute.
+   *
+   * <p>Sample code:
+   *
+   * <pre><code>
+   * try (TopicAdminClient topicAdminClient = TopicAdminClient.create()) {
+   *   ProjectTopicName topic = ProjectTopicName.of("[PROJECT]", "[TOPIC]");
    *   ByteString data = ByteString.copyFromUtf8("");
    *   PubsubMessage messagesElement = PubsubMessage.newBuilder()
    *     .setData(data)
@@ -375,7 +436,7 @@ public class TopicAdminClient implements BackgroundResource {
    *
    * <pre><code>
    * try (TopicAdminClient topicAdminClient = TopicAdminClient.create()) {
-   *   TopicName topic = TopicName.of("[PROJECT]", "[TOPIC]");
+   *   ProjectTopicName topic = ProjectTopicName.of("[PROJECT]", "[TOPIC]");
    *   ByteString data = ByteString.copyFromUtf8("");
    *   PubsubMessage messagesElement = PubsubMessage.newBuilder()
    *     .setData(data)
@@ -403,7 +464,7 @@ public class TopicAdminClient implements BackgroundResource {
    *
    * <pre><code>
    * try (TopicAdminClient topicAdminClient = TopicAdminClient.create()) {
-   *   TopicName topic = TopicName.of("[PROJECT]", "[TOPIC]");
+   *   ProjectTopicName topic = ProjectTopicName.of("[PROJECT]", "[TOPIC]");
    *   Topic response = topicAdminClient.getTopic(topic);
    * }
    * </code></pre>
@@ -411,9 +472,10 @@ public class TopicAdminClient implements BackgroundResource {
    * @param topic The name of the topic to get. Format is `projects/{project}/topics/{topic}`.
    * @throws com.google.api.gax.rpc.ApiException if the remote call fails
    */
-  public final Topic getTopic(TopicName topic) {
+  public final Topic getTopic(ProjectTopicName topic) {
 
-    GetTopicRequest request = GetTopicRequest.newBuilder().setTopic(topic.toString()).build();
+    GetTopicRequest request =
+        GetTopicRequest.newBuilder().setTopic(topic == null ? null : topic.toString()).build();
     return getTopic(request);
   }
 
@@ -425,7 +487,29 @@ public class TopicAdminClient implements BackgroundResource {
    *
    * <pre><code>
    * try (TopicAdminClient topicAdminClient = TopicAdminClient.create()) {
-   *   TopicName topic = TopicName.of("[PROJECT]", "[TOPIC]");
+   *   ProjectTopicName topic = ProjectTopicName.of("[PROJECT]", "[TOPIC]");
+   *   Topic response = topicAdminClient.getTopic(topic.toString());
+   * }
+   * </code></pre>
+   *
+   * @param topic The name of the topic to get. Format is `projects/{project}/topics/{topic}`.
+   * @throws com.google.api.gax.rpc.ApiException if the remote call fails
+   */
+  public final Topic getTopic(String topic) {
+
+    GetTopicRequest request = GetTopicRequest.newBuilder().setTopic(topic).build();
+    return getTopic(request);
+  }
+
+  // AUTO-GENERATED DOCUMENTATION AND METHOD
+  /**
+   * Gets the configuration of a topic.
+   *
+   * <p>Sample code:
+   *
+   * <pre><code>
+   * try (TopicAdminClient topicAdminClient = TopicAdminClient.create()) {
+   *   ProjectTopicName topic = ProjectTopicName.of("[PROJECT]", "[TOPIC]");
    *   GetTopicRequest request = GetTopicRequest.newBuilder()
    *     .setTopic(topic.toString())
    *     .build();
@@ -448,7 +532,7 @@ public class TopicAdminClient implements BackgroundResource {
    *
    * <pre><code>
    * try (TopicAdminClient topicAdminClient = TopicAdminClient.create()) {
-   *   TopicName topic = TopicName.of("[PROJECT]", "[TOPIC]");
+   *   ProjectTopicName topic = ProjectTopicName.of("[PROJECT]", "[TOPIC]");
    *   GetTopicRequest request = GetTopicRequest.newBuilder()
    *     .setTopic(topic.toString())
    *     .build();
@@ -483,7 +567,33 @@ public class TopicAdminClient implements BackgroundResource {
    */
   public final ListTopicsPagedResponse listTopics(ProjectName project) {
     ListTopicsRequest request =
-        ListTopicsRequest.newBuilder().setProject(project.toString()).build();
+        ListTopicsRequest.newBuilder()
+            .setProject(project == null ? null : project.toString())
+            .build();
+    return listTopics(request);
+  }
+
+  // AUTO-GENERATED DOCUMENTATION AND METHOD
+  /**
+   * Lists matching topics.
+   *
+   * <p>Sample code:
+   *
+   * <pre><code>
+   * try (TopicAdminClient topicAdminClient = TopicAdminClient.create()) {
+   *   ProjectName project = ProjectName.of("[PROJECT]");
+   *   for (Topic element : topicAdminClient.listTopics(project.toString()).iterateAll()) {
+   *     // doThingsWith(element);
+   *   }
+   * }
+   * </code></pre>
+   *
+   * @param project The name of the cloud project that topics belong to. Format is
+   *     `projects/{project}`.
+   * @throws com.google.api.gax.rpc.ApiException if the remote call fails
+   */
+  public final ListTopicsPagedResponse listTopics(String project) {
+    ListTopicsRequest request = ListTopicsRequest.newBuilder().setProject(project).build();
     return listTopics(request);
   }
 
@@ -575,8 +685,8 @@ public class TopicAdminClient implements BackgroundResource {
    *
    * <pre><code>
    * try (TopicAdminClient topicAdminClient = TopicAdminClient.create()) {
-   *   TopicName topic = TopicName.of("[PROJECT]", "[TOPIC]");
-   *   for (SubscriptionName element : topicAdminClient.listTopicSubscriptions(topic).iterateAllAsSubscriptionName()) {
+   *   ProjectTopicName topic = ProjectTopicName.of("[PROJECT]", "[TOPIC]");
+   *   for (ProjectSubscriptionName element : topicAdminClient.listTopicSubscriptions(topic).iterateAllAsProjectSubscriptionName()) {
    *     // doThingsWith(element);
    *   }
    * }
@@ -586,9 +696,11 @@ public class TopicAdminClient implements BackgroundResource {
    *     `projects/{project}/topics/{topic}`.
    * @throws com.google.api.gax.rpc.ApiException if the remote call fails
    */
-  public final ListTopicSubscriptionsPagedResponse listTopicSubscriptions(TopicName topic) {
+  public final ListTopicSubscriptionsPagedResponse listTopicSubscriptions(ProjectTopicName topic) {
     ListTopicSubscriptionsRequest request =
-        ListTopicSubscriptionsRequest.newBuilder().setTopic(topic.toString()).build();
+        ListTopicSubscriptionsRequest.newBuilder()
+            .setTopic(topic == null ? null : topic.toString())
+            .build();
     return listTopicSubscriptions(request);
   }
 
@@ -600,11 +712,36 @@ public class TopicAdminClient implements BackgroundResource {
    *
    * <pre><code>
    * try (TopicAdminClient topicAdminClient = TopicAdminClient.create()) {
-   *   TopicName topic = TopicName.of("[PROJECT]", "[TOPIC]");
+   *   ProjectTopicName topic = ProjectTopicName.of("[PROJECT]", "[TOPIC]");
+   *   for (ProjectSubscriptionName element : topicAdminClient.listTopicSubscriptions(topic.toString()).iterateAllAsProjectSubscriptionName()) {
+   *     // doThingsWith(element);
+   *   }
+   * }
+   * </code></pre>
+   *
+   * @param topic The name of the topic that subscriptions are attached to. Format is
+   *     `projects/{project}/topics/{topic}`.
+   * @throws com.google.api.gax.rpc.ApiException if the remote call fails
+   */
+  public final ListTopicSubscriptionsPagedResponse listTopicSubscriptions(String topic) {
+    ListTopicSubscriptionsRequest request =
+        ListTopicSubscriptionsRequest.newBuilder().setTopic(topic).build();
+    return listTopicSubscriptions(request);
+  }
+
+  // AUTO-GENERATED DOCUMENTATION AND METHOD
+  /**
+   * Lists the name of the subscriptions for this topic.
+   *
+   * <p>Sample code:
+   *
+   * <pre><code>
+   * try (TopicAdminClient topicAdminClient = TopicAdminClient.create()) {
+   *   ProjectTopicName topic = ProjectTopicName.of("[PROJECT]", "[TOPIC]");
    *   ListTopicSubscriptionsRequest request = ListTopicSubscriptionsRequest.newBuilder()
    *     .setTopic(topic.toString())
    *     .build();
-   *   for (SubscriptionName element : topicAdminClient.listTopicSubscriptions(request).iterateAllAsSubscriptionName()) {
+   *   for (ProjectSubscriptionName element : topicAdminClient.listTopicSubscriptions(request).iterateAllAsProjectSubscriptionName()) {
    *     // doThingsWith(element);
    *   }
    * }
@@ -626,13 +763,13 @@ public class TopicAdminClient implements BackgroundResource {
    *
    * <pre><code>
    * try (TopicAdminClient topicAdminClient = TopicAdminClient.create()) {
-   *   TopicName topic = TopicName.of("[PROJECT]", "[TOPIC]");
+   *   ProjectTopicName topic = ProjectTopicName.of("[PROJECT]", "[TOPIC]");
    *   ListTopicSubscriptionsRequest request = ListTopicSubscriptionsRequest.newBuilder()
    *     .setTopic(topic.toString())
    *     .build();
    *   ApiFuture&lt;ListTopicSubscriptionsPagedResponse&gt; future = topicAdminClient.listTopicSubscriptionsPagedCallable().futureCall(request);
    *   // Do something
-   *   for (SubscriptionName element : future.get().iterateAllAsSubscriptionName()) {
+   *   for (ProjectSubscriptionName element : future.get().iterateAllAsProjectSubscriptionName()) {
    *     // doThingsWith(element);
    *   }
    * }
@@ -651,13 +788,13 @@ public class TopicAdminClient implements BackgroundResource {
    *
    * <pre><code>
    * try (TopicAdminClient topicAdminClient = TopicAdminClient.create()) {
-   *   TopicName topic = TopicName.of("[PROJECT]", "[TOPIC]");
+   *   ProjectTopicName topic = ProjectTopicName.of("[PROJECT]", "[TOPIC]");
    *   ListTopicSubscriptionsRequest request = ListTopicSubscriptionsRequest.newBuilder()
    *     .setTopic(topic.toString())
    *     .build();
    *   while (true) {
    *     ListTopicSubscriptionsResponse response = topicAdminClient.listTopicSubscriptionsCallable().call(request);
-   *     for (SubscriptionName element : SubscriptionName.parseList(response.getSubscriptionsList())) {
+   *     for (ProjectSubscriptionName element : ProjectSubscriptionName.parseList(response.getSubscriptionsList())) {
    *       // doThingsWith(element);
    *     }
    *     String nextPageToken = response.getNextPageToken();
@@ -686,7 +823,7 @@ public class TopicAdminClient implements BackgroundResource {
    *
    * <pre><code>
    * try (TopicAdminClient topicAdminClient = TopicAdminClient.create()) {
-   *   TopicName topic = TopicName.of("[PROJECT]", "[TOPIC]");
+   *   ProjectTopicName topic = ProjectTopicName.of("[PROJECT]", "[TOPIC]");
    *   topicAdminClient.deleteTopic(topic);
    * }
    * </code></pre>
@@ -694,9 +831,10 @@ public class TopicAdminClient implements BackgroundResource {
    * @param topic Name of the topic to delete. Format is `projects/{project}/topics/{topic}`.
    * @throws com.google.api.gax.rpc.ApiException if the remote call fails
    */
-  public final void deleteTopic(TopicName topic) {
+  public final void deleteTopic(ProjectTopicName topic) {
 
-    DeleteTopicRequest request = DeleteTopicRequest.newBuilder().setTopic(topic.toString()).build();
+    DeleteTopicRequest request =
+        DeleteTopicRequest.newBuilder().setTopic(topic == null ? null : topic.toString()).build();
     deleteTopic(request);
   }
 
@@ -711,7 +849,32 @@ public class TopicAdminClient implements BackgroundResource {
    *
    * <pre><code>
    * try (TopicAdminClient topicAdminClient = TopicAdminClient.create()) {
-   *   TopicName topic = TopicName.of("[PROJECT]", "[TOPIC]");
+   *   ProjectTopicName topic = ProjectTopicName.of("[PROJECT]", "[TOPIC]");
+   *   topicAdminClient.deleteTopic(topic.toString());
+   * }
+   * </code></pre>
+   *
+   * @param topic Name of the topic to delete. Format is `projects/{project}/topics/{topic}`.
+   * @throws com.google.api.gax.rpc.ApiException if the remote call fails
+   */
+  public final void deleteTopic(String topic) {
+
+    DeleteTopicRequest request = DeleteTopicRequest.newBuilder().setTopic(topic).build();
+    deleteTopic(request);
+  }
+
+  // AUTO-GENERATED DOCUMENTATION AND METHOD
+  /**
+   * Deletes the topic with the given name. Returns `NOT_FOUND` if the topic does not exist. After a
+   * topic is deleted, a new topic may be created with the same name; this is an entirely new topic
+   * with none of the old configuration or subscriptions. Existing subscriptions to this topic are
+   * not deleted, but their `topic` field is set to `_deleted-topic_`.
+   *
+   * <p>Sample code:
+   *
+   * <pre><code>
+   * try (TopicAdminClient topicAdminClient = TopicAdminClient.create()) {
+   *   ProjectTopicName topic = ProjectTopicName.of("[PROJECT]", "[TOPIC]");
    *   DeleteTopicRequest request = DeleteTopicRequest.newBuilder()
    *     .setTopic(topic.toString())
    *     .build();
@@ -737,7 +900,7 @@ public class TopicAdminClient implements BackgroundResource {
    *
    * <pre><code>
    * try (TopicAdminClient topicAdminClient = TopicAdminClient.create()) {
-   *   TopicName topic = TopicName.of("[PROJECT]", "[TOPIC]");
+   *   ProjectTopicName topic = ProjectTopicName.of("[PROJECT]", "[TOPIC]");
    *   DeleteTopicRequest request = DeleteTopicRequest.newBuilder()
    *     .setTopic(topic.toString())
    *     .build();
@@ -759,7 +922,7 @@ public class TopicAdminClient implements BackgroundResource {
    *
    * <pre><code>
    * try (TopicAdminClient topicAdminClient = TopicAdminClient.create()) {
-   *   String formattedResource = TopicName.format("[PROJECT]", "[TOPIC]");
+   *   String formattedResource = ProjectTopicName.format("[PROJECT]", "[TOPIC]");
    *   Policy policy = Policy.newBuilder().build();
    *   Policy response = topicAdminClient.setIamPolicy(formattedResource, policy);
    * }
@@ -788,7 +951,7 @@ public class TopicAdminClient implements BackgroundResource {
    *
    * <pre><code>
    * try (TopicAdminClient topicAdminClient = TopicAdminClient.create()) {
-   *   String formattedResource = TopicName.format("[PROJECT]", "[TOPIC]");
+   *   String formattedResource = ProjectTopicName.format("[PROJECT]", "[TOPIC]");
    *   Policy policy = Policy.newBuilder().build();
    *   SetIamPolicyRequest request = SetIamPolicyRequest.newBuilder()
    *     .setResource(formattedResource)
@@ -813,7 +976,7 @@ public class TopicAdminClient implements BackgroundResource {
    *
    * <pre><code>
    * try (TopicAdminClient topicAdminClient = TopicAdminClient.create()) {
-   *   String formattedResource = TopicName.format("[PROJECT]", "[TOPIC]");
+   *   String formattedResource = ProjectTopicName.format("[PROJECT]", "[TOPIC]");
    *   Policy policy = Policy.newBuilder().build();
    *   SetIamPolicyRequest request = SetIamPolicyRequest.newBuilder()
    *     .setResource(formattedResource)
@@ -838,7 +1001,7 @@ public class TopicAdminClient implements BackgroundResource {
    *
    * <pre><code>
    * try (TopicAdminClient topicAdminClient = TopicAdminClient.create()) {
-   *   String formattedResource = TopicName.format("[PROJECT]", "[TOPIC]");
+   *   String formattedResource = ProjectTopicName.format("[PROJECT]", "[TOPIC]");
    *   Policy response = topicAdminClient.getIamPolicy(formattedResource);
    * }
    * </code></pre>
@@ -863,7 +1026,7 @@ public class TopicAdminClient implements BackgroundResource {
    *
    * <pre><code>
    * try (TopicAdminClient topicAdminClient = TopicAdminClient.create()) {
-   *   String formattedResource = TopicName.format("[PROJECT]", "[TOPIC]");
+   *   String formattedResource = ProjectTopicName.format("[PROJECT]", "[TOPIC]");
    *   GetIamPolicyRequest request = GetIamPolicyRequest.newBuilder()
    *     .setResource(formattedResource)
    *     .build();
@@ -887,7 +1050,7 @@ public class TopicAdminClient implements BackgroundResource {
    *
    * <pre><code>
    * try (TopicAdminClient topicAdminClient = TopicAdminClient.create()) {
-   *   String formattedResource = TopicName.format("[PROJECT]", "[TOPIC]");
+   *   String formattedResource = ProjectTopicName.format("[PROJECT]", "[TOPIC]");
    *   GetIamPolicyRequest request = GetIamPolicyRequest.newBuilder()
    *     .setResource(formattedResource)
    *     .build();
@@ -910,7 +1073,7 @@ public class TopicAdminClient implements BackgroundResource {
    *
    * <pre><code>
    * try (TopicAdminClient topicAdminClient = TopicAdminClient.create()) {
-   *   String formattedResource = TopicName.format("[PROJECT]", "[TOPIC]");
+   *   String formattedResource = ProjectTopicName.format("[PROJECT]", "[TOPIC]");
    *   List&lt;String&gt; permissions = new ArrayList&lt;&gt;();
    *   TestIamPermissionsResponse response = topicAdminClient.testIamPermissions(formattedResource, permissions);
    * }
@@ -944,7 +1107,7 @@ public class TopicAdminClient implements BackgroundResource {
    *
    * <pre><code>
    * try (TopicAdminClient topicAdminClient = TopicAdminClient.create()) {
-   *   String formattedResource = TopicName.format("[PROJECT]", "[TOPIC]");
+   *   String formattedResource = ProjectTopicName.format("[PROJECT]", "[TOPIC]");
    *   List&lt;String&gt; permissions = new ArrayList&lt;&gt;();
    *   TestIamPermissionsRequest request = TestIamPermissionsRequest.newBuilder()
    *     .setResource(formattedResource)
@@ -970,7 +1133,7 @@ public class TopicAdminClient implements BackgroundResource {
    *
    * <pre><code>
    * try (TopicAdminClient topicAdminClient = TopicAdminClient.create()) {
-   *   String formattedResource = TopicName.format("[PROJECT]", "[TOPIC]");
+   *   String formattedResource = ProjectTopicName.format("[PROJECT]", "[TOPIC]");
    *   List&lt;String&gt; permissions = new ArrayList&lt;&gt;();
    *   TestIamPermissionsRequest request = TestIamPermissionsRequest.newBuilder()
    *     .setResource(formattedResource)
@@ -988,7 +1151,7 @@ public class TopicAdminClient implements BackgroundResource {
   }
 
   @Override
-  public final void close() throws Exception {
+  public final void close() {
     stub.close();
   }
 
@@ -1114,13 +1277,13 @@ public class TopicAdminClient implements BackgroundResource {
       super(page, ListTopicSubscriptionsFixedSizeCollection.createEmptyCollection());
     }
 
-    public Iterable<SubscriptionName> iterateAllAsSubscriptionName() {
+    public Iterable<ProjectSubscriptionName> iterateAllAsProjectSubscriptionName() {
       return Iterables.transform(
           iterateAll(),
-          new Function<String, SubscriptionName>() {
+          new Function<String, ProjectSubscriptionName>() {
             @Override
-            public SubscriptionName apply(String arg0) {
-              return SubscriptionName.parse(arg0);
+            public ProjectSubscriptionName apply(String arg0) {
+              return ProjectSubscriptionName.parse(arg0);
             }
           });
     }
@@ -1155,24 +1318,24 @@ public class TopicAdminClient implements BackgroundResource {
       return super.createPageAsync(context, futureResponse);
     }
 
-    public Iterable<SubscriptionName> iterateAllAsSubscriptionName() {
+    public Iterable<ProjectSubscriptionName> iterateAllAsProjectSubscriptionName() {
       return Iterables.transform(
           iterateAll(),
-          new Function<String, SubscriptionName>() {
+          new Function<String, ProjectSubscriptionName>() {
             @Override
-            public SubscriptionName apply(String arg0) {
-              return SubscriptionName.parse(arg0);
+            public ProjectSubscriptionName apply(String arg0) {
+              return ProjectSubscriptionName.parse(arg0);
             }
           });
     }
 
-    public Iterable<SubscriptionName> getValuesAsSubscriptionName() {
+    public Iterable<ProjectSubscriptionName> getValuesAsProjectSubscriptionName() {
       return Iterables.transform(
           getValues(),
-          new Function<String, SubscriptionName>() {
+          new Function<String, ProjectSubscriptionName>() {
             @Override
-            public SubscriptionName apply(String arg0) {
-              return SubscriptionName.parse(arg0);
+            public ProjectSubscriptionName apply(String arg0) {
+              return ProjectSubscriptionName.parse(arg0);
             }
           });
     }
@@ -1198,13 +1361,13 @@ public class TopicAdminClient implements BackgroundResource {
       return new ListTopicSubscriptionsFixedSizeCollection(pages, collectionSize);
     }
 
-    public Iterable<SubscriptionName> getValuesAsSubscriptionName() {
+    public Iterable<ProjectSubscriptionName> getValuesAsProjectSubscriptionName() {
       return Iterables.transform(
           getValues(),
-          new Function<String, SubscriptionName>() {
+          new Function<String, ProjectSubscriptionName>() {
             @Override
-            public SubscriptionName apply(String arg0) {
-              return SubscriptionName.parse(arg0);
+            public ProjectSubscriptionName apply(String arg0) {
+              return ProjectSubscriptionName.parse(arg0);
             }
           });
     }

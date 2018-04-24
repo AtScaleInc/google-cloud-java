@@ -88,7 +88,7 @@ import org.threeten.bp.Duration;
  * <code>
  * EntityTypesStubSettings.Builder entityTypesSettingsBuilder =
  *     EntityTypesStubSettings.newBuilder();
- * entityTypesSettingsBuilder.getEntityTypeSettings().getRetrySettingsBuilder()
+ * entityTypesSettingsBuilder.getEntityTypeSettings().getRetrySettings().toBuilder()
  *     .setTotalTimeout(Duration.ofSeconds(30));
  * EntityTypesStubSettings entityTypesSettings = entityTypesSettingsBuilder.build();
  * </code>
@@ -700,6 +700,7 @@ public class EntityTypesStubSettings extends StubSettings<EntityTypesStubSetting
               batchDeleteEntitiesSettings);
     }
 
+    // NEXT_MAJOR_VER: remove 'throws Exception'
     /**
      * Applies the given settings updater function to all of the unary API methods in this service.
      *

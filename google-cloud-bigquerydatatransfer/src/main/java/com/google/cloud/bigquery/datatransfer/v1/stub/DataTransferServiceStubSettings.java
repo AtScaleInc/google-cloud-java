@@ -96,7 +96,7 @@ import org.threeten.bp.Duration;
  * <code>
  * DataTransferServiceStubSettings.Builder dataTransferServiceSettingsBuilder =
  *     DataTransferServiceStubSettings.newBuilder();
- * dataTransferServiceSettingsBuilder.getDataSourceSettings().getRetrySettingsBuilder()
+ * dataTransferServiceSettingsBuilder.getDataSourceSettings().getRetrySettings().toBuilder()
  *     .setTotalTimeout(Duration.ofSeconds(30));
  * DataTransferServiceStubSettings dataTransferServiceSettings = dataTransferServiceSettingsBuilder.build();
  * </code>
@@ -759,6 +759,7 @@ public class DataTransferServiceStubSettings extends StubSettings<DataTransferSe
               checkValidCredsSettings);
     }
 
+    // NEXT_MAJOR_VER: remove 'throws Exception'
     /**
      * Applies the given settings updater function to all of the unary API methods in this service.
      *

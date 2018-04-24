@@ -70,7 +70,7 @@ import javax.annotation.Generated;
  * <code>
  * DlpServiceSettings.Builder dlpServiceSettingsBuilder =
  *     DlpServiceSettings.newBuilder();
- * dlpServiceSettingsBuilder.inspectContentSettings().getRetrySettingsBuilder()
+ * dlpServiceSettingsBuilder.inspectContentSettings().getRetrySettings().toBuilder()
  *     .setTotalTimeout(Duration.ofSeconds(30));
  * DlpServiceSettings dlpServiceSettings = dlpServiceSettingsBuilder.build();
  * </code>
@@ -221,6 +221,7 @@ public class DlpServiceSettings extends ClientSettings<DlpServiceSettings> {
       return ((DlpServiceStubSettings.Builder) getStubSettings());
     }
 
+    // NEXT_MAJOR_VER: remove 'throws Exception'
     /**
      * Applies the given settings updater function to all of the unary API methods in this service.
      *

@@ -57,7 +57,7 @@ import javax.annotation.Generated;
  * <code>
  * IntentsSettings.Builder intentsSettingsBuilder =
  *     IntentsSettings.newBuilder();
- * intentsSettingsBuilder.getIntentSettings().getRetrySettingsBuilder()
+ * intentsSettingsBuilder.getIntentSettings().getRetrySettings().toBuilder()
  *     .setTotalTimeout(Duration.ofSeconds(30));
  * IntentsSettings intentsSettings = intentsSettingsBuilder.build();
  * </code>
@@ -197,6 +197,7 @@ public class IntentsSettings extends ClientSettings<IntentsSettings> {
       return ((IntentsStubSettings.Builder) getStubSettings());
     }
 
+    // NEXT_MAJOR_VER: remove 'throws Exception'
     /**
      * Applies the given settings updater function to all of the unary API methods in this service.
      *

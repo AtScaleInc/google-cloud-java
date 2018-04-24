@@ -175,7 +175,37 @@ public class TraceServiceClient implements BackgroundResource {
   public final void batchWriteSpans(ProjectName name, List<Span> spans) {
 
     BatchWriteSpansRequest request =
-        BatchWriteSpansRequest.newBuilder().setName(name.toString()).addAllSpans(spans).build();
+        BatchWriteSpansRequest.newBuilder()
+            .setName(name == null ? null : name.toString())
+            .addAllSpans(spans)
+            .build();
+    batchWriteSpans(request);
+  }
+
+  // AUTO-GENERATED DOCUMENTATION AND METHOD
+  /**
+   * Sends new spans to new or existing traces. You cannot update existing spans.
+   *
+   * <p>Sample code:
+   *
+   * <pre><code>
+   * try (TraceServiceClient traceServiceClient = TraceServiceClient.create()) {
+   *   ProjectName name = ProjectName.of("[PROJECT]");
+   *   List&lt;Span&gt; spans = new ArrayList&lt;&gt;();
+   *   traceServiceClient.batchWriteSpans(name.toString(), spans);
+   * }
+   * </code></pre>
+   *
+   * @param name Required. The name of the project where the spans belong. The format is
+   *     `projects/[PROJECT_ID]`.
+   * @param spans A list of new spans. The span names must not match existing spans, or the results
+   *     are undefined.
+   * @throws com.google.api.gax.rpc.ApiException if the remote call fails
+   */
+  public final void batchWriteSpans(String name, List<Span> spans) {
+
+    BatchWriteSpansRequest request =
+        BatchWriteSpansRequest.newBuilder().setName(name).addAllSpans(spans).build();
     batchWriteSpans(request);
   }
 
@@ -290,7 +320,7 @@ public class TraceServiceClient implements BackgroundResource {
   }
 
   @Override
-  public final void close() throws Exception {
+  public final void close() {
     stub.close();
   }
 

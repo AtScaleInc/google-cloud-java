@@ -16,12 +16,20 @@
 
 package com.google.cloud.bigquery.spi.v2;
 
-import com.google.api.services.bigquery.model.*;
+import com.google.api.core.InternalExtensionOnly;
+import com.google.api.services.bigquery.model.Dataset;
+import com.google.api.services.bigquery.model.GetQueryResultsResponse;
+import com.google.api.services.bigquery.model.Job;
+import com.google.api.services.bigquery.model.Table;
+import com.google.api.services.bigquery.model.TableDataInsertAllRequest;
+import com.google.api.services.bigquery.model.TableDataInsertAllResponse;
+import com.google.api.services.bigquery.model.TableDataList;
 import com.google.cloud.ServiceRpc;
 import com.google.cloud.Tuple;
 import com.google.cloud.bigquery.BigQueryException;
 import java.util.Map;
 
+@InternalExtensionOnly
 public interface BigQueryRpc extends ServiceRpc {
 
   // These options are part of the Google Cloud BigQuery query parameters
@@ -169,7 +177,7 @@ public interface BigQueryRpc extends ServiceRpc {
    *
    * @throws BigQueryException upon failure
    */
-  Job getJob(String projectId, String jobId, Map<Option, ?> options);
+  Job getJob(String projectId, String jobId, String location, Map<Option, ?> options);
 
   /**
    * Lists the project's jobs.
@@ -186,14 +194,15 @@ public interface BigQueryRpc extends ServiceRpc {
    *     found
    * @throws BigQueryException upon failure
    */
-  boolean cancel(String projectId, String jobId);
+  boolean cancel(String projectId, String jobId, String location);
 
   /**
    * Returns results of the query associated with the provided job.
    *
    * @throws BigQueryException upon failure
    */
-  GetQueryResultsResponse getQueryResults(String projectId, String jobId, Map<Option, ?> options);
+  GetQueryResultsResponse getQueryResults(
+      String projectId, String jobId, String location, Map<Option, ?> options);
 
   /**
    * Runs the query associated with the request.
@@ -205,10 +214,10 @@ public interface BigQueryRpc extends ServiceRpc {
   /**
    * Opens a resumable upload session to load data into a BigQuery table and returns an upload URI.
    *
-   * @param configuration load configuration
+   * @param job load job
    * @throws BigQueryException upon failure
    */
-  String open(JobConfiguration configuration);
+  String open(Job job);
 
   /**
    * Uploads the provided data to the resumable upload session at the specified position. This

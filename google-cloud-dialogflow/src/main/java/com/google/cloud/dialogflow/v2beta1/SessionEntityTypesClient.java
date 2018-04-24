@@ -35,12 +35,16 @@ import javax.annotation.Generated;
 
 // AUTO-GENERATED DOCUMENTATION AND SERVICE
 /**
- * Service Description: Manages session entity types.
+ * Service Description: Entities are extracted from user input and represent parameters that are
+ * meaningful to your application. For example, a date range, a proper name such as a geographic
+ * location or landmark, and so on. Entities represent actionable data for your application.
  *
- * <p>Session entity types can be redefined on a session level, allowing for specific concepts, like
- * a user's playlists.
+ * <p>Session entity types are referred to as &#42;&#42;User&#42;&#42; entity types and are entities
+ * that are built for an individual user such as favorites, preferences, playlists, and so on. You
+ * can redefine a session entity type at the session level.
  *
- * <p>#
+ * <p>For more information about entity types, see the [Dialogflow
+ * documentation](https://dialogflow.com/docs/entities).
  *
  * <p>This class provides the ability to make remote calls to the backing service through method
  * calls that map to API methods. Sample code to get started:
@@ -176,14 +180,46 @@ public class SessionEntityTypesClient implements BackgroundResource {
    *
    * @param parent Required. The session to list all session entity types from. Format:
    *     `projects/&lt;Project ID&gt;/agent/sessions/&lt;Session ID&gt;` or `projects/&lt;Project
-   *     ID&gt;/agent/runtimes/&lt;Runtime ID&gt;/sessions/&lt;Session ID&gt;`. Note: Runtimes are
-   *     under construction and will be available soon. If &lt;Runtime ID&gt; is not specified, we
-   *     assume default 'sandbox' runtime.
+   *     ID&gt;/agent/environments/&lt;Environment ID&gt;/users/&lt;User ID&gt;/
+   *     sessions/&lt;Session ID&gt;`. Note: Environments and users are under construction and will
+   *     be available soon. If &lt;Environment ID&gt; is not specified, we assume default 'draft'
+   *     environment. If &lt;User ID&gt; is not specified, we assume default '-' user.
    * @throws com.google.api.gax.rpc.ApiException if the remote call fails
    */
   public final ListSessionEntityTypesPagedResponse listSessionEntityTypes(SessionName parent) {
     ListSessionEntityTypesRequest request =
-        ListSessionEntityTypesRequest.newBuilder().setParent(parent.toString()).build();
+        ListSessionEntityTypesRequest.newBuilder()
+            .setParent(parent == null ? null : parent.toString())
+            .build();
+    return listSessionEntityTypes(request);
+  }
+
+  // AUTO-GENERATED DOCUMENTATION AND METHOD
+  /**
+   * Returns the list of all session entity types in the specified session.
+   *
+   * <p>Sample code:
+   *
+   * <pre><code>
+   * try (SessionEntityTypesClient sessionEntityTypesClient = SessionEntityTypesClient.create()) {
+   *   SessionName parent = SessionName.of("[PROJECT]", "[SESSION]");
+   *   for (SessionEntityType element : sessionEntityTypesClient.listSessionEntityTypes(parent.toString()).iterateAll()) {
+   *     // doThingsWith(element);
+   *   }
+   * }
+   * </code></pre>
+   *
+   * @param parent Required. The session to list all session entity types from. Format:
+   *     `projects/&lt;Project ID&gt;/agent/sessions/&lt;Session ID&gt;` or `projects/&lt;Project
+   *     ID&gt;/agent/environments/&lt;Environment ID&gt;/users/&lt;User ID&gt;/
+   *     sessions/&lt;Session ID&gt;`. Note: Environments and users are under construction and will
+   *     be available soon. If &lt;Environment ID&gt; is not specified, we assume default 'draft'
+   *     environment. If &lt;User ID&gt; is not specified, we assume default '-' user.
+   * @throws com.google.api.gax.rpc.ApiException if the remote call fails
+   */
+  public final ListSessionEntityTypesPagedResponse listSessionEntityTypes(String parent) {
+    ListSessionEntityTypesRequest request =
+        ListSessionEntityTypesRequest.newBuilder().setParent(parent).build();
     return listSessionEntityTypes(request);
   }
 
@@ -285,16 +321,48 @@ public class SessionEntityTypesClient implements BackgroundResource {
    *
    * @param name Required. The name of the session entity type. Format: `projects/&lt;Project
    *     ID&gt;/agent/sessions/&lt;Session ID&gt;/entityTypes/&lt;Entity Type Display Name&gt;` or
-   *     `projects/&lt;Project ID&gt;/agent/runtimes/&lt;Runtime ID&gt;/sessions/&lt;Session
-   *     ID&gt;/entityTypes/&lt;Entity Type Display Name&gt;`. Note: Runtimes are under construction
-   *     and will be available soon. If &lt;Runtime ID&gt; is not specified, we assume default
-   *     'sandbox' runtime.
+   *     `projects/&lt;Project ID&gt;/agent/environments/&lt;Environment ID&gt;/users/&lt;User
+   *     ID&gt;/sessions/&lt;Session ID&gt;/ entityTypes/&lt;Entity Type Display Name&gt;`. Note:
+   *     Environments and users re under construction and will be available soon. If &lt;Environment
+   *     ID&gt; is not specified, we assume default 'draft' environment. If &lt;User ID&gt; is not
+   *     specified, we assume default '-' user.
    * @throws com.google.api.gax.rpc.ApiException if the remote call fails
    */
   public final SessionEntityType getSessionEntityType(SessionEntityTypeName name) {
 
     GetSessionEntityTypeRequest request =
-        GetSessionEntityTypeRequest.newBuilder().setName(name.toString()).build();
+        GetSessionEntityTypeRequest.newBuilder()
+            .setName(name == null ? null : name.toString())
+            .build();
+    return getSessionEntityType(request);
+  }
+
+  // AUTO-GENERATED DOCUMENTATION AND METHOD
+  /**
+   * Retrieves the specified session entity type.
+   *
+   * <p>Sample code:
+   *
+   * <pre><code>
+   * try (SessionEntityTypesClient sessionEntityTypesClient = SessionEntityTypesClient.create()) {
+   *   SessionEntityTypeName name = SessionEntityTypeName.of("[PROJECT]", "[SESSION]", "[ENTITY_TYPE]");
+   *   SessionEntityType response = sessionEntityTypesClient.getSessionEntityType(name.toString());
+   * }
+   * </code></pre>
+   *
+   * @param name Required. The name of the session entity type. Format: `projects/&lt;Project
+   *     ID&gt;/agent/sessions/&lt;Session ID&gt;/entityTypes/&lt;Entity Type Display Name&gt;` or
+   *     `projects/&lt;Project ID&gt;/agent/environments/&lt;Environment ID&gt;/users/&lt;User
+   *     ID&gt;/sessions/&lt;Session ID&gt;/ entityTypes/&lt;Entity Type Display Name&gt;`. Note:
+   *     Environments and users re under construction and will be available soon. If &lt;Environment
+   *     ID&gt; is not specified, we assume default 'draft' environment. If &lt;User ID&gt; is not
+   *     specified, we assume default '-' user.
+   * @throws com.google.api.gax.rpc.ApiException if the remote call fails
+   */
+  public final SessionEntityType getSessionEntityType(String name) {
+
+    GetSessionEntityTypeRequest request =
+        GetSessionEntityTypeRequest.newBuilder().setName(name).build();
     return getSessionEntityType(request);
   }
 
@@ -360,9 +428,10 @@ public class SessionEntityTypesClient implements BackgroundResource {
    *
    * @param parent Required. The session to create a session entity type for. Format:
    *     `projects/&lt;Project ID&gt;/agent/sessions/&lt;Session ID&gt;` or `projects/&lt;Project
-   *     ID&gt;/agent/runtimes/&lt;Runtime ID&gt;/sessions/&lt;Session ID&gt;`. Note: Runtimes are
-   *     under construction and will be available soon. If &lt;Runtime ID&gt; is not specified, we
-   *     assume default 'sandbox' runtime.
+   *     ID&gt;/agent/environments/&lt;Environment ID&gt;/users/&lt;User ID&gt;/
+   *     sessions/&lt;Session ID&gt;`. Note: Environments and users are under construction and will
+   *     be available soon. If &lt;Environment ID&gt; is not specified, we assume default 'draft'
+   *     environment. If &lt;User ID&gt; is not specified, we assume default '-' user.
    * @param sessionEntityType Required. The session entity type to create.
    * @throws com.google.api.gax.rpc.ApiException if the remote call fails
    */
@@ -371,7 +440,41 @@ public class SessionEntityTypesClient implements BackgroundResource {
 
     CreateSessionEntityTypeRequest request =
         CreateSessionEntityTypeRequest.newBuilder()
-            .setParent(parent.toString())
+            .setParent(parent == null ? null : parent.toString())
+            .setSessionEntityType(sessionEntityType)
+            .build();
+    return createSessionEntityType(request);
+  }
+
+  // AUTO-GENERATED DOCUMENTATION AND METHOD
+  /**
+   * Creates a session entity type.
+   *
+   * <p>Sample code:
+   *
+   * <pre><code>
+   * try (SessionEntityTypesClient sessionEntityTypesClient = SessionEntityTypesClient.create()) {
+   *   SessionName parent = SessionName.of("[PROJECT]", "[SESSION]");
+   *   SessionEntityType sessionEntityType = SessionEntityType.newBuilder().build();
+   *   SessionEntityType response = sessionEntityTypesClient.createSessionEntityType(parent.toString(), sessionEntityType);
+   * }
+   * </code></pre>
+   *
+   * @param parent Required. The session to create a session entity type for. Format:
+   *     `projects/&lt;Project ID&gt;/agent/sessions/&lt;Session ID&gt;` or `projects/&lt;Project
+   *     ID&gt;/agent/environments/&lt;Environment ID&gt;/users/&lt;User ID&gt;/
+   *     sessions/&lt;Session ID&gt;`. Note: Environments and users are under construction and will
+   *     be available soon. If &lt;Environment ID&gt; is not specified, we assume default 'draft'
+   *     environment. If &lt;User ID&gt; is not specified, we assume default '-' user.
+   * @param sessionEntityType Required. The session entity type to create.
+   * @throws com.google.api.gax.rpc.ApiException if the remote call fails
+   */
+  public final SessionEntityType createSessionEntityType(
+      String parent, SessionEntityType sessionEntityType) {
+
+    CreateSessionEntityTypeRequest request =
+        CreateSessionEntityTypeRequest.newBuilder()
+            .setParent(parent)
             .setSessionEntityType(sessionEntityType)
             .build();
     return createSessionEntityType(request);
@@ -442,10 +545,11 @@ public class SessionEntityTypesClient implements BackgroundResource {
    *
    * @param sessionEntityType Required. The entity type to update. Format: `projects/&lt;Project
    *     ID&gt;/agent/sessions/&lt;Session ID&gt;/entityTypes/&lt;Entity Type Display Name&gt;` or
-   *     `projects/&lt;Project ID&gt;/agent/runtimes/&lt;Runtime ID&gt;/sessions/&lt;Session
-   *     ID&gt;/entityTypes/&lt;Entity Type Display Name&gt;`. Note: Runtimes are under construction
-   *     and will be available soon. If &lt;Runtime ID&gt; is not specified, we assume default
-   *     'sandbox' runtime.
+   *     `projects/&lt;Project ID&gt;/agent/environments/&lt;Environment ID&gt;/users/&lt;User
+   *     ID&gt;/sessions/&lt;Session ID&gt;/entityTypes/&lt;Entity Type Display Name&gt;`. Note:
+   *     Environments and users are under construction and will be available soon. If
+   *     &lt;Environment ID&gt; is not specified, we assume default 'draft' environment. If &lt;User
+   *     ID&gt; is not specified, we assume default '-' user.
    * @throws com.google.api.gax.rpc.ApiException if the remote call fails
    */
   public final SessionEntityType updateSessionEntityType(SessionEntityType sessionEntityType) {
@@ -516,16 +620,48 @@ public class SessionEntityTypesClient implements BackgroundResource {
    *
    * @param name Required. The name of the entity type to delete. Format: `projects/&lt;Project
    *     ID&gt;/agent/sessions/&lt;Session ID&gt;/entityTypes/&lt;Entity Type Display Name&gt;` or
-   *     `projects/&lt;Project ID&gt;/agent/runtimes/&lt;Runtime ID&gt;/sessions/&lt;Session
-   *     ID&gt;/entityTypes/&lt;Entity Type Display Name&gt;`. Note: Runtimes are under construction
-   *     and will be available soon. If &lt;Runtime ID&gt; is not specified, we assume default
-   *     'sandbox' runtime.
+   *     `projects/&lt;Project ID&gt;/agent/environments/&lt;Environment ID&gt;/users/&lt;User
+   *     ID&gt;/sessions/&lt;Session ID&gt;/entityTypes/&lt;Entity Type Display Name&gt;`. Note:
+   *     Environments and users are under construction and will be available soon. If
+   *     &lt;Environment ID&gt; is not specified, we assume default 'draft' environment. If &lt;User
+   *     ID&gt; is not specified, we assume default '-' user.
    * @throws com.google.api.gax.rpc.ApiException if the remote call fails
    */
   public final void deleteSessionEntityType(SessionEntityTypeName name) {
 
     DeleteSessionEntityTypeRequest request =
-        DeleteSessionEntityTypeRequest.newBuilder().setName(name.toString()).build();
+        DeleteSessionEntityTypeRequest.newBuilder()
+            .setName(name == null ? null : name.toString())
+            .build();
+    deleteSessionEntityType(request);
+  }
+
+  // AUTO-GENERATED DOCUMENTATION AND METHOD
+  /**
+   * Deletes the specified session entity type.
+   *
+   * <p>Sample code:
+   *
+   * <pre><code>
+   * try (SessionEntityTypesClient sessionEntityTypesClient = SessionEntityTypesClient.create()) {
+   *   SessionEntityTypeName name = SessionEntityTypeName.of("[PROJECT]", "[SESSION]", "[ENTITY_TYPE]");
+   *   sessionEntityTypesClient.deleteSessionEntityType(name.toString());
+   * }
+   * </code></pre>
+   *
+   * @param name Required. The name of the entity type to delete. Format: `projects/&lt;Project
+   *     ID&gt;/agent/sessions/&lt;Session ID&gt;/entityTypes/&lt;Entity Type Display Name&gt;` or
+   *     `projects/&lt;Project ID&gt;/agent/environments/&lt;Environment ID&gt;/users/&lt;User
+   *     ID&gt;/sessions/&lt;Session ID&gt;/entityTypes/&lt;Entity Type Display Name&gt;`. Note:
+   *     Environments and users are under construction and will be available soon. If
+   *     &lt;Environment ID&gt; is not specified, we assume default 'draft' environment. If &lt;User
+   *     ID&gt; is not specified, we assume default '-' user.
+   * @throws com.google.api.gax.rpc.ApiException if the remote call fails
+   */
+  public final void deleteSessionEntityType(String name) {
+
+    DeleteSessionEntityTypeRequest request =
+        DeleteSessionEntityTypeRequest.newBuilder().setName(name).build();
     deleteSessionEntityType(request);
   }
 
@@ -576,7 +712,7 @@ public class SessionEntityTypesClient implements BackgroundResource {
   }
 
   @Override
-  public final void close() throws Exception {
+  public final void close() {
     stub.close();
   }
 

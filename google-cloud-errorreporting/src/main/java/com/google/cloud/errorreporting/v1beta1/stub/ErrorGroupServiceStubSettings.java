@@ -63,7 +63,7 @@ import org.threeten.bp.Duration;
  * <code>
  * ErrorGroupServiceStubSettings.Builder errorGroupServiceSettingsBuilder =
  *     ErrorGroupServiceStubSettings.newBuilder();
- * errorGroupServiceSettingsBuilder.getGroupSettings().getRetrySettingsBuilder()
+ * errorGroupServiceSettingsBuilder.getGroupSettings().getRetrySettings().toBuilder()
  *     .setTotalTimeout(Duration.ofSeconds(30));
  * ErrorGroupServiceStubSettings errorGroupServiceSettings = errorGroupServiceSettingsBuilder.build();
  * </code>
@@ -253,6 +253,7 @@ public class ErrorGroupServiceStubSettings extends StubSettings<ErrorGroupServic
           ImmutableList.<UnaryCallSettings.Builder<?, ?>>of(getGroupSettings, updateGroupSettings);
     }
 
+    // NEXT_MAJOR_VER: remove 'throws Exception'
     /**
      * Applies the given settings updater function to all of the unary API methods in this service.
      *

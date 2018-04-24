@@ -54,7 +54,7 @@ import javax.annotation.Generated;
  * <code>
  * JobControllerSettings.Builder jobControllerSettingsBuilder =
  *     JobControllerSettings.newBuilder();
- * jobControllerSettingsBuilder.submitJobSettings().getRetrySettingsBuilder()
+ * jobControllerSettingsBuilder.submitJobSettings().getRetrySettings().toBuilder()
  *     .setTotalTimeout(Duration.ofSeconds(30));
  * JobControllerSettings jobControllerSettings = jobControllerSettingsBuilder.build();
  * </code>
@@ -178,6 +178,7 @@ public class JobControllerSettings extends ClientSettings<JobControllerSettings>
       return ((JobControllerStubSettings.Builder) getStubSettings());
     }
 
+    // NEXT_MAJOR_VER: remove 'throws Exception'
     /**
      * Applies the given settings updater function to all of the unary API methods in this service.
      *

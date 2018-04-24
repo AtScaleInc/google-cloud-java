@@ -76,7 +76,7 @@ import org.threeten.bp.Duration;
  * <code>
  * SessionEntityTypesStubSettings.Builder sessionEntityTypesSettingsBuilder =
  *     SessionEntityTypesStubSettings.newBuilder();
- * sessionEntityTypesSettingsBuilder.getSessionEntityTypeSettings().getRetrySettingsBuilder()
+ * sessionEntityTypesSettingsBuilder.getSessionEntityTypeSettings().getRetrySettings().toBuilder()
  *     .setTotalTimeout(Duration.ofSeconds(30));
  * SessionEntityTypesStubSettings sessionEntityTypesSettings = sessionEntityTypesSettingsBuilder.build();
  * </code>
@@ -412,6 +412,7 @@ public class SessionEntityTypesStubSettings extends StubSettings<SessionEntityTy
               deleteSessionEntityTypeSettings);
     }
 
+    // NEXT_MAJOR_VER: remove 'throws Exception'
     /**
      * Applies the given settings updater function to all of the unary API methods in this service.
      *

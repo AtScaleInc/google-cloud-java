@@ -78,7 +78,7 @@ import javax.annotation.Generated;
  * <code>
  * BigtableTableAdminSettings.Builder bigtableTableAdminSettingsBuilder =
  *     BigtableTableAdminSettings.newBuilder();
- * bigtableTableAdminSettingsBuilder.createTableSettings().getRetrySettingsBuilder()
+ * bigtableTableAdminSettingsBuilder.createTableSettings().getRetrySettings().toBuilder()
  *     .setTotalTimeout(Duration.ofSeconds(30));
  * BigtableTableAdminSettings bigtableTableAdminSettings = bigtableTableAdminSettingsBuilder.build();
  * </code>
@@ -255,6 +255,7 @@ public class BigtableTableAdminSettings extends ClientSettings<BigtableTableAdmi
       return ((BigtableTableAdminStubSettings.Builder) getStubSettings());
     }
 
+    // NEXT_MAJOR_VER: remove 'throws Exception'
     /**
      * Applies the given settings updater function to all of the unary API methods in this service.
      *

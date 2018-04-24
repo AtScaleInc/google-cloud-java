@@ -69,7 +69,7 @@ import org.threeten.bp.Duration;
  * <code>
  * OsLoginServiceStubSettings.Builder osLoginServiceSettingsBuilder =
  *     OsLoginServiceStubSettings.newBuilder();
- * osLoginServiceSettingsBuilder.deletePosixAccountSettings().getRetrySettingsBuilder()
+ * osLoginServiceSettingsBuilder.deletePosixAccountSettings().getRetrySettings().toBuilder()
  *     .setTotalTimeout(Duration.ofSeconds(30));
  * OsLoginServiceStubSettings osLoginServiceSettings = osLoginServiceSettingsBuilder.build();
  * </code>
@@ -349,6 +349,7 @@ public class OsLoginServiceStubSettings extends StubSettings<OsLoginServiceStubS
               updateSshPublicKeySettings);
     }
 
+    // NEXT_MAJOR_VER: remove 'throws Exception'
     /**
      * Applies the given settings updater function to all of the unary API methods in this service.
      *

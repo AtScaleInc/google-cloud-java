@@ -51,7 +51,7 @@ import javax.annotation.Generated;
  * <code>
  * SessionsSettings.Builder sessionsSettingsBuilder =
  *     SessionsSettings.newBuilder();
- * sessionsSettingsBuilder.detectIntentSettings().getRetrySettingsBuilder()
+ * sessionsSettingsBuilder.detectIntentSettings().getRetrySettings().toBuilder()
  *     .setTotalTimeout(Duration.ofSeconds(30));
  * SessionsSettings sessionsSettings = sessionsSettingsBuilder.build();
  * </code>
@@ -154,6 +154,7 @@ public class SessionsSettings extends ClientSettings<SessionsSettings> {
       return ((SessionsStubSettings.Builder) getStubSettings());
     }
 
+    // NEXT_MAJOR_VER: remove 'throws Exception'
     /**
      * Applies the given settings updater function to all of the unary API methods in this service.
      *

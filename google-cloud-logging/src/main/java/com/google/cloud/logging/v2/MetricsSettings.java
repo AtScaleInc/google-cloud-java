@@ -61,7 +61,7 @@ import javax.annotation.Generated;
  * <code>
  * MetricsSettings.Builder metricsSettingsBuilder =
  *     MetricsSettings.newBuilder();
- * metricsSettingsBuilder.getLogMetricSettings().getRetrySettingsBuilder()
+ * metricsSettingsBuilder.getLogMetricSettings().getRetrySettings().toBuilder()
  *     .setTotalTimeout(Duration.ofSeconds(30));
  * MetricsSettings metricsSettings = metricsSettingsBuilder.build();
  * </code>
@@ -180,6 +180,7 @@ public class MetricsSettings extends ClientSettings<MetricsSettings> {
       return ((MetricsServiceV2StubSettings.Builder) getStubSettings());
     }
 
+    // NEXT_MAJOR_VER: remove 'throws Exception'
     /**
      * Applies the given settings updater function to all of the unary API methods in this service.
      *

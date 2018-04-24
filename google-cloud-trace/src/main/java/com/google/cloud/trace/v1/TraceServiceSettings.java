@@ -59,7 +59,7 @@ import javax.annotation.Generated;
  * <code>
  * TraceServiceSettings.Builder traceServiceSettingsBuilder =
  *     TraceServiceSettings.newBuilder();
- * traceServiceSettingsBuilder.patchTracesSettings().getRetrySettingsBuilder()
+ * traceServiceSettingsBuilder.patchTracesSettings().getRetrySettings().toBuilder()
  *     .setTotalTimeout(Duration.ofSeconds(30));
  * TraceServiceSettings traceServiceSettings = traceServiceSettingsBuilder.build();
  * </code>
@@ -168,6 +168,7 @@ public class TraceServiceSettings extends ClientSettings<TraceServiceSettings> {
       return ((TraceServiceStubSettings.Builder) getStubSettings());
     }
 
+    // NEXT_MAJOR_VER: remove 'throws Exception'
     /**
      * Applies the given settings updater function to all of the unary API methods in this service.
      *

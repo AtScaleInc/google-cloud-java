@@ -78,7 +78,7 @@ import org.threeten.bp.Duration;
  * <code>
  * ErrorStatsServiceStubSettings.Builder errorStatsServiceSettingsBuilder =
  *     ErrorStatsServiceStubSettings.newBuilder();
- * errorStatsServiceSettingsBuilder.deleteEventsSettings().getRetrySettingsBuilder()
+ * errorStatsServiceSettingsBuilder.deleteEventsSettings().getRetrySettings().toBuilder()
  *     .setTotalTimeout(Duration.ofSeconds(30));
  * ErrorStatsServiceStubSettings errorStatsServiceSettings = errorStatsServiceSettingsBuilder.build();
  * </code>
@@ -404,6 +404,7 @@ public class ErrorStatsServiceStubSettings extends StubSettings<ErrorStatsServic
               listGroupStatsSettings, listEventsSettings, deleteEventsSettings);
     }
 
+    // NEXT_MAJOR_VER: remove 'throws Exception'
     /**
      * Applies the given settings updater function to all of the unary API methods in this service.
      *

@@ -39,12 +39,9 @@ import com.google.auth.oauth2.GoogleCredentials;
 import com.google.common.base.Optional;
 import com.google.common.base.Preconditions;
 import com.google.common.collect.ImmutableMap;
-import com.google.pubsub.v1.GetSubscriptionRequest;
+import com.google.pubsub.v1.ProjectSubscriptionName;
 import com.google.pubsub.v1.SubscriberGrpc;
-import com.google.pubsub.v1.SubscriberGrpc.SubscriberFutureStub;
 import com.google.pubsub.v1.SubscriberGrpc.SubscriberStub;
-import com.google.pubsub.v1.Subscription;
-import com.google.pubsub.v1.SubscriptionName;
 import io.grpc.CallCredentials;
 import io.grpc.Channel;
 import io.grpc.auth.MoreCallCredentials;
@@ -56,7 +53,6 @@ import java.util.List;
 import java.util.Map;
 import java.util.concurrent.ScheduledExecutorService;
 import java.util.concurrent.ScheduledFuture;
-import java.util.concurrent.TimeUnit;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 import javax.annotation.Nullable;
@@ -96,7 +92,6 @@ import org.threeten.bp.Duration;
  */
 public class Subscriber extends AbstractApiService {
   private static final int THREADS_PER_CHANNEL = 5;
-  @InternalApi static final int CHANNELS_PER_CORE = 1;
   private static final int MAX_INBOUND_MESSAGE_SIZE =
       20 * 1024 * 1024; // 20MB API maximum message size.
   @InternalApi static final int MAX_ACK_DEADLINE_SECONDS = 600;
@@ -107,8 +102,7 @@ public class Subscriber extends AbstractApiService {
 
   private static final Logger logger = Logger.getLogger(Subscriber.class.getName());
 
-  private final SubscriptionName subscriptionName;
-  private final String cachedSubscriptionNameString;
+  private final String subscriptionName;
   private final FlowControlSettings flowControlSettings;
   private final Duration ackExpirationPadding;
   private final Duration maxAckExtensionPeriod;
@@ -123,19 +117,16 @@ public class Subscriber extends AbstractApiService {
   private final List<Channel> channels;
   private final MessageReceiver receiver;
   private final List<StreamingSubscriberConnection> streamingSubscriberConnections;
-  private final List<PollingSubscriberConnection> pollingSubscriberConnections;
   private final Deque<MessageDispatcher.OutstandingMessageBatch> outstandingMessageBatches =
       new LinkedList<>();
   private final ApiClock clock;
   private final List<AutoCloseable> closeables = new ArrayList<>();
-  private final boolean useStreaming;
   private ScheduledFuture<?> ackDeadlineUpdater;
 
   private Subscriber(Builder builder) {
     receiver = builder.receiver;
     flowControlSettings = builder.flowControlSettings;
     subscriptionName = builder.subscriptionName;
-    cachedSubscriptionNameString = subscriptionName.toString();
 
     Preconditions.checkArgument(
         builder.ackExpirationPadding.compareTo(Duration.ZERO) > 0, "padding must be positive");
@@ -197,43 +188,32 @@ public class Subscriber extends AbstractApiService {
     numChannels = builder.parallelPullCount;
     channels = new ArrayList<>(numChannels);
     streamingSubscriberConnections = new ArrayList<StreamingSubscriberConnection>(numChannels);
-    pollingSubscriberConnections = new ArrayList<PollingSubscriberConnection>(numChannels);
-    useStreaming = builder.useStreaming;
   }
 
   /**
    * Constructs a new {@link Builder}.
    *
-   * <p>Once {@link Builder#build} is called a gRPC stub will be created for use of the {@link
-   * Subscriber}.
-   *
    * @param subscription Cloud Pub/Sub subscription to bind the subscriber to
    * @param receiver an implementation of {@link MessageReceiver} used to process the received
    *     messages
-   *
-   * @deprecated Use {@link #newBuilder(SubscriptionName, MessageReceiver)} instead.
    */
-  @Deprecated
-  public static Builder defaultBuilder(SubscriptionName subscription, MessageReceiver receiver) {
-    return newBuilder(subscription, receiver);
+  public static Builder newBuilder(ProjectSubscriptionName subscription, MessageReceiver receiver) {
+    return newBuilder(subscription.toString(), receiver);
   }
 
   /**
    * Constructs a new {@link Builder}.
    *
-   * <p>Once {@link Builder#build} is called a gRPC stub will be created for use of the {@link
-   * Subscriber}.
-   *
    * @param subscription Cloud Pub/Sub subscription to bind the subscriber to
    * @param receiver an implementation of {@link MessageReceiver} used to process the received
    *     messages
    */
-  public static Builder newBuilder(SubscriptionName subscription, MessageReceiver receiver) {
+  public static Builder newBuilder(String subscription, MessageReceiver receiver) {
     return new Builder(subscription, receiver);
   }
 
   /** Subscription which the subscriber is subscribed to. */
-  public SubscriptionName getSubscriptionName() {
+  public String getSubscriptionNameString() {
     return subscriptionName;
   }
 
@@ -316,11 +296,7 @@ public class Subscriber extends AbstractApiService {
               @Override
               public void run() {
                 try {
-                  if (useStreaming) {
-                    startStreamingConnections();
-                  } else {
-                    startPollingConnections();
-                  }
+                  startStreamingConnections();
                   notifyStarted();
                 } catch (Throwable t) {
                   notifyFailed(t);
@@ -332,77 +308,23 @@ public class Subscriber extends AbstractApiService {
 
   @Override
   protected void doStop() {
-    // stop connection is no-op if connections haven't been started.
-    stopAllPollingConnections();
-    stopAllStreamingConnections();
-    try {
-      for (AutoCloseable closeable : closeables) {
-        closeable.close();
-      }
-      notifyStopped();
-    } catch (Exception e) {
-      notifyFailed(e);
-    }
-  }
-
-  private void startPollingConnections() throws IOException {
-    synchronized (pollingSubscriberConnections) {
-      Credentials credentials = credentialsProvider.getCredentials();
-      CallCredentials callCredentials =
-          credentials == null ? null : MoreCallCredentials.from(credentials);
-
-      SubscriberGrpc.SubscriberBlockingStub getSubStub =
-          SubscriberGrpc.newBlockingStub(channels.get(0))
-              .withDeadlineAfter(
-                  PollingSubscriberConnection.DEFAULT_TIMEOUT.toMillis(), TimeUnit.MILLISECONDS);
-      if (callCredentials != null) {
-        getSubStub = getSubStub.withCallCredentials(callCredentials);
-      }
-      Subscription subscriptionInfo =
-          getSubStub.getSubscription(
-              GetSubscriptionRequest.newBuilder()
-                  .setSubscription(cachedSubscriptionNameString)
-                  .build());
-
-      for (Channel channel : channels) {
-        SubscriberFutureStub stub = SubscriberGrpc.newFutureStub(channel);
-        if (callCredentials != null) {
-          stub = stub.withCallCredentials(callCredentials);
-        }
-        pollingSubscriberConnections.add(
-            new PollingSubscriberConnection(
-                subscriptionInfo,
-                receiver,
-                ackExpirationPadding,
-                maxAckExtensionPeriod,
-                ackLatencyDistribution,
-                stub,
-                flowController,
-                flowControlSettings.getMaxOutstandingElementCount(),
-                outstandingMessageBatches,
-                executor,
-                alarmsExecutor,
-                clock));
-      }
-      startConnections(
-          pollingSubscriberConnections,
-          new Listener() {
-            @Override
-            public void failed(State from, Throwable failure) {
-              // If a connection failed is because of a fatal error, we should fail the
-              // whole subscriber.
-              stopAllPollingConnections();
-              try {
-                notifyFailed(failure);
-              } catch (IllegalStateException e) {
-                if (isRunning()) {
-                  throw e;
+    new Thread(
+            new Runnable() {
+              @Override
+              public void run() {
+                try {
+                  // stop connection is no-op if connections haven't been started.
+                  stopAllStreamingConnections();
+                  for (AutoCloseable closeable : closeables) {
+                    closeable.close();
+                  }
+                  notifyStopped();
+                } catch (Exception e) {
+                  notifyFailed(e);
                 }
-                // It could happen that we are shutting down while some channels fail.
               }
-            }
-          });
-    }
+            })
+        .start();
   }
 
   private void startStreamingConnections() throws IOException {
@@ -418,7 +340,7 @@ public class Subscriber extends AbstractApiService {
         }
         streamingSubscriberConnections.add(
             new StreamingSubscriberConnection(
-                cachedSubscriptionNameString,
+                subscriptionName,
                 receiver,
                 ackExpirationPadding,
                 maxAckExtensionPeriod,
@@ -449,10 +371,6 @@ public class Subscriber extends AbstractApiService {
             }
           });
     }
-  }
-
-  private void stopAllPollingConnections() {
-    stopConnections(pollingSubscriberConnections);
   }
 
   private void stopAllStreamingConnections() {
@@ -498,27 +416,22 @@ public class Subscriber extends AbstractApiService {
     private static final Duration MIN_ACK_EXPIRATION_PADDING = Duration.ofMillis(100);
     private static final Duration DEFAULT_ACK_EXPIRATION_PADDING = Duration.ofSeconds(5);
     private static final Duration DEFAULT_MAX_ACK_EXTENSION_PERIOD = Duration.ofMinutes(60);
-    private static final long DEFAULT_MEMORY_PERCENTAGE = 20;
 
     static final ExecutorProvider DEFAULT_EXECUTOR_PROVIDER =
         InstantiatingExecutorProvider.newBuilder()
             .setExecutorThreadCount(
                 THREADS_PER_CHANNEL
-                    * CHANNELS_PER_CORE
                     * Runtime.getRuntime().availableProcessors())
             .build();
 
-    SubscriptionName subscriptionName;
+    String subscriptionName;
     MessageReceiver receiver;
 
     Duration ackExpirationPadding = DEFAULT_ACK_EXPIRATION_PADDING;
     Duration maxAckExtensionPeriod = DEFAULT_MAX_ACK_EXTENSION_PERIOD;
 
     FlowControlSettings flowControlSettings =
-        FlowControlSettings.newBuilder()
-            .setMaxOutstandingRequestBytes(
-                Runtime.getRuntime().maxMemory() * DEFAULT_MEMORY_PERCENTAGE / 100L)
-            .build();
+        FlowControlSettings.newBuilder().setMaxOutstandingElementCount(1000L).build();
 
     ExecutorProvider executorProvider = DEFAULT_EXECUTOR_PROVIDER;
     ExecutorProvider systemExecutorProvider = FixedExecutorProvider.create(SHARED_SYSTEM_EXECUTOR);
@@ -533,10 +446,9 @@ public class Subscriber extends AbstractApiService {
     CredentialsProvider credentialsProvider =
         SubscriptionAdminSettings.defaultCredentialsProviderBuilder().build();
     Optional<ApiClock> clock = Optional.absent();
-    boolean useStreaming = true;
-    int parallelPullCount = Runtime.getRuntime().availableProcessors() * CHANNELS_PER_CORE;
+    int parallelPullCount = 1;
 
-    Builder(SubscriptionName subscriptionName, MessageReceiver receiver) {
+    Builder(String subscriptionName, MessageReceiver receiver) {
       this.subscriptionName = subscriptionName;
       this.receiver = receiver;
     }
@@ -585,7 +497,31 @@ public class Subscriber extends AbstractApiService {
       return this;
     }
 
-    /** Sets the flow control settings. */
+    /**
+     * Sets the flow control settings.
+     *
+     * <p>In the example below, the {@link Subscriber} will make sure that
+     *
+     * <ul>
+     *   <li>there are at most ten thousand outstanding messages, and
+     *   <li>the combined size of outstanding messages does not exceed 1GB.
+     * </ul>
+     *
+     * "Outstanding messages" here means the messages that have already been given to {@link
+     * MessageReceiver} but not yet {@code acked()} or {@code nacked()}.
+     *
+     * <pre>{@code
+     * FlowControlSettings flowControlSettings =
+     *  FlowControlSettings.newBuilder()
+     *      .setMaxOutstandingElementCount(10_000L)
+     *      .setMaxOutstandingRequestBytes(1_000_000_000L)
+     *      .build();
+     * Subscriber subscriber =
+     *     Subscriber.newBuilder(subscriptionName, receiver)
+     *         .setFlowControlSettings(flowControlSettings)
+     *         .build();
+     * }</pre>
+     */
     public Builder setFlowControlSettings(FlowControlSettings flowControlSettings) {
       this.flowControlSettings = Preconditions.checkNotNull(flowControlSettings);
       return this;
@@ -638,7 +574,7 @@ public class Subscriber extends AbstractApiService {
     }
 
     /**
-     * Gives the ability to set a custom executor for polling and managing lease extensions. If none
+     * Gives the ability to set a custom executor for managing lease extensions. If none
      * is provided a shared one will be used by all {@link Subscriber} instances.
      */
     public Builder setSystemExecutorProvider(ExecutorProvider executorProvider) {
@@ -658,11 +594,6 @@ public class Subscriber extends AbstractApiService {
     /** Gives the ability to set a custom clock. */
     Builder setClock(ApiClock clock) {
       this.clock = Optional.of(clock);
-      return this;
-    }
-
-    Builder setUseStreaming(boolean useStreaming) {
-      this.useStreaming = useStreaming;
       return this;
     }
 

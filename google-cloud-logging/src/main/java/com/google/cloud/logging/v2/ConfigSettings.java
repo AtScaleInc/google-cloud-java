@@ -69,7 +69,7 @@ import javax.annotation.Generated;
  * <code>
  * ConfigSettings.Builder configSettingsBuilder =
  *     ConfigSettings.newBuilder();
- * configSettingsBuilder.getSinkSettings().getRetrySettingsBuilder()
+ * configSettingsBuilder.getSinkSettings().getRetrySettings().toBuilder()
  *     .setTotalTimeout(Duration.ofSeconds(30));
  * ConfigSettings configSettings = configSettingsBuilder.build();
  * </code>
@@ -214,6 +214,7 @@ public class ConfigSettings extends ClientSettings<ConfigSettings> {
       return ((ConfigServiceV2StubSettings.Builder) getStubSettings());
     }
 
+    // NEXT_MAJOR_VER: remove 'throws Exception'
     /**
      * Applies the given settings updater function to all of the unary API methods in this service.
      *

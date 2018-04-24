@@ -84,7 +84,7 @@ import org.threeten.bp.Duration;
  * <code>
  * ClusterControllerStubSettings.Builder clusterControllerSettingsBuilder =
  *     ClusterControllerStubSettings.newBuilder();
- * clusterControllerSettingsBuilder.getClusterSettings().getRetrySettingsBuilder()
+ * clusterControllerSettingsBuilder.getClusterSettings().getRetrySettings().toBuilder()
  *     .setTotalTimeout(Duration.ofSeconds(30));
  * ClusterControllerStubSettings clusterControllerSettings = clusterControllerSettingsBuilder.build();
  * </code>
@@ -559,6 +559,7 @@ public class ClusterControllerStubSettings extends StubSettings<ClusterControlle
               diagnoseClusterSettings);
     }
 
+    // NEXT_MAJOR_VER: remove 'throws Exception'
     /**
      * Applies the given settings updater function to all of the unary API methods in this service.
      *

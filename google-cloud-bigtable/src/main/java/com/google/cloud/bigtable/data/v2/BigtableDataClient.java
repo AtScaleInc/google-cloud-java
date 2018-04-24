@@ -16,17 +16,23 @@
 package com.google.cloud.bigtable.data.v2;
 
 import com.google.api.core.ApiFuture;
+import com.google.api.core.BetaApi;
 import com.google.api.core.InternalApi;
 import com.google.api.gax.rpc.ResponseObserver;
 import com.google.api.gax.rpc.ServerStream;
 import com.google.api.gax.rpc.ServerStreamingCallable;
 import com.google.api.gax.rpc.UnaryCallable;
-import com.google.bigtable.admin.v2.InstanceName;
+import com.google.cloud.bigtable.data.v2.models.InstanceName;
+import com.google.cloud.bigtable.data.v2.models.BulkMutationBatcher;
+import com.google.cloud.bigtable.data.v2.models.ConditionalRowMutation;
+import com.google.cloud.bigtable.data.v2.models.KeyOffset;
+import com.google.cloud.bigtable.data.v2.models.Query;
+import com.google.cloud.bigtable.data.v2.models.ReadModifyWriteRow;
+import com.google.cloud.bigtable.data.v2.models.Row;
+import com.google.cloud.bigtable.data.v2.models.RowAdapter;
+import com.google.cloud.bigtable.data.v2.models.RowMutation;
 import com.google.cloud.bigtable.data.v2.stub.EnhancedBigtableStub;
-import com.google.cloud.bigtable.data.v2.wrappers.KeyOffset;
-import com.google.cloud.bigtable.data.v2.wrappers.Query;
-import com.google.cloud.bigtable.data.v2.wrappers.Row;
-import com.google.cloud.bigtable.data.v2.wrappers.RowAdapter;
+import com.google.protobuf.ByteString;
 import java.io.IOException;
 import java.util.List;
 
@@ -122,13 +128,51 @@ public class BigtableDataClient implements AutoCloseable {
   }
 
   /**
+   * Convenience method for asynchronously reading a single row. If the row does not exist, the
+   * future's value will be null.
+   *
+   * <p>Sample code:
+   *
+   * <pre>{@code
+   * InstanceName instanceName = InstanceName.of("[PROJECT]", "[INSTANCE]");
+   * try (BigtableClient bigtableClient = BigtableClient.create(instanceName)) {
+   *   String tableId = "[TABLE]";
+   *
+   *   ApiFuture<Row> result = bigtableClient.readRow(tableId,  "key");
+   * }
+   * }</pre>
+   */
+  public ApiFuture<Row> readRowAsync(String tableId, String rowKey) {
+    return readRowAsync(tableId, ByteString.copyFromUtf8(rowKey));
+  }
+
+  /**
+   * Convenience method for asynchronously reading a single row. If the row does not exist, the
+   * future's value will be null.
+   *
+   * <p>Sample code:
+   *
+   * <pre>{@code
+   * InstanceName instanceName = InstanceName.of("[PROJECT]", "[INSTANCE]");
+   * try (BigtableClient bigtableClient = BigtableClient.create(instanceName)) {
+   *   String tableId = "[TABLE]";
+   *
+   *   ApiFuture<Row> result = bigtableClient.readRow(tableId,  ByteString.copyFromUtf8("key"));
+   * }
+   * }</pre>
+   */
+  public ApiFuture<Row> readRowAsync(String tableId, ByteString rowKey) {
+    return readRowsCallable().first().futureCall(Query.create(tableId).rowKey(rowKey));
+  }
+
+  /**
    * Convenience method for synchronous streaming the results of a {@link Query}.
    *
    * <p>Sample code:
    *
    * <pre>{@code
    * // Import the filter DSL
-   * import static com.google.cloud.bigtable.data.v2.wrappers.Filters.FILTERS;
+   * import static com.google.cloud.bigtable.data.v2.models.Filters.FILTERS;
    *
    * InstanceName instanceName = InstanceName.of("[PROJECT]", "[INSTANCE]");
    * try (BigtableClient bigtableClient = BigtableClient.create(instanceName)) {
@@ -147,7 +191,7 @@ public class BigtableDataClient implements AutoCloseable {
    *
    * @see ServerStreamingCallable For call styles.
    * @see Query For query options.
-   * @see com.google.cloud.bigtable.data.v2.wrappers.Filters For the filter building DSL.
+   * @see com.google.cloud.bigtable.data.v2.models.Filters For the filter building DSL.
    */
   public ServerStream<Row> readRows(Query query) {
     return readRowsCallable().call(query);
@@ -215,7 +259,7 @@ public class BigtableDataClient implements AutoCloseable {
    *
    * @see ServerStreamingCallable For call styles.
    * @see Query For query options.
-   * @see com.google.cloud.bigtable.data.v2.wrappers.Filters For the filter building DSL.
+   * @see com.google.cloud.bigtable.data.v2.models.Filters For the filter building DSL.
    */
   public ServerStreamingCallable<Query, Row> readRowsCallable() {
     return stub.readRowsCallable();
@@ -245,7 +289,7 @@ public class BigtableDataClient implements AutoCloseable {
    *
    * @see ServerStreamingCallable For call styles.
    * @see Query For query options.
-   * @see com.google.cloud.bigtable.data.v2.wrappers.Filters For the filter building DSL.
+   * @see com.google.cloud.bigtable.data.v2.models.Filters For the filter building DSL.
    */
   public <RowT> ServerStreamingCallable<Query, RowT> readRowsCallable(RowAdapter<RowT> rowAdapter) {
     return stub.createReadRowsCallable(rowAdapter);
@@ -261,11 +305,11 @@ public class BigtableDataClient implements AutoCloseable {
    * <pre>{@code
    * InstanceName instanceName = InstanceName.of("[PROJECT]", "[INSTANCE]");
    * try (BigtableClient bigtableClient = BigtableClient.create(instanceName)) {
-   *   ApiFuture<List<KeyOffset>> keyOffsets = bigtableClient.sampleRowKeys("[TABLE]");
+   *   ApiFuture<List<KeyOffset>> keyOffsets = bigtableClient.sampleRowKeysAsync("[TABLE]");
    * }
    * }</pre>
    */
-  public ApiFuture<List<KeyOffset>> sampleRowKeys(String tableId) {
+  public ApiFuture<List<KeyOffset>> sampleRowKeysAsync(String tableId) {
     return sampleRowKeysCallable().futureCall(tableId);
   }
 
@@ -290,6 +334,166 @@ public class BigtableDataClient implements AutoCloseable {
    */
   public UnaryCallable<String, List<KeyOffset>> sampleRowKeysCallable() {
     return stub.sampleRowKeysCallable();
+  }
+
+  /**
+   * Convenience method to asynchronously mutate a single row atomically. Cells already present in
+   * the row are left unchanged unless explicitly changed by the {@link RowMutation}.
+   *
+   * <p>Sample code:
+   *
+   * <pre>{@code
+   * InstanceName instanceName = InstanceName.of("[PROJECT]", "[INSTANCE]");
+   * try (BigtableClient bigtableClient = BigtableClient.create(instanceName)) {
+   *   RowMutation mutation = RowMutation.create("[TABLE]", "[ROW KEY]")
+   *     .setCell("[FAMILY NAME]", "[QUALIFIER]", "[VALUE]");
+   *
+   *   ApitFuture<Void> future = bigtableClient.mutateRowAsync(mutation);
+   * }
+   * }</pre>
+   */
+  public ApiFuture<Void> mutateRowAsync(RowMutation rowMutation) {
+    return mutateRowCallable().futureCall(rowMutation);
+  }
+
+  /**
+   * Mutates a single row atomically. Cells already present in the row are left unchanged unless
+   * explicitly changed by the {@link RowMutation}.
+   *
+   * <p>Sample code:
+   *
+   * <pre>{@code
+   * InstanceName instanceName = InstanceName.of("[PROJECT]", "[INSTANCE]");
+   * try (BigtableClient bigtableClient = BigtableClient.create(instanceName)) {
+   *   RowMutation mutation = RowMutation.create("[TABLE]", "[ROW KEY]")
+   *     .setCell("[FAMILY NAME]", "[QUALIFIER]", "[VALUE]");
+   *
+   *   bigtableClient.mutateRowCallable().call(mutation);
+   * }
+   * }</pre>
+   */
+  public UnaryCallable<RowMutation, Void> mutateRowCallable() {
+    return stub.mutateRowCallable();
+  }
+
+  /**
+   * Mutates multiple rows in a batch. Each individual row is mutated atomically as in MutateRow,
+   * but the entire batch is not executed atomically.
+   *
+   * <p>Sample code:
+   *
+   * <pre>{@code
+   * InstanceName instanceName = InstanceName.of("[PROJECT]", "[INSTANCE]");
+   * try (BigtableClient bigtableClient = BigtableClient.create(instanceName)) {
+   *   try (BulkMutationBatcher batcher = bigtableClient.newBulkMutationBatcher()) {
+   *     for (String someValue : someCollection) {
+   *       RowMutation mutation = RowMutation.create("[TABLE]", "[ROW KEY]")
+   *         .setCell("[FAMILY NAME]", "[QUALIFIER]", "[VALUE]");
+   *
+   *       batcher.add(mutation);
+   *     }
+   *   } catch (BulkMutationFailure failure) {
+   *     // Handle error
+   *   }
+   *   // After `batcher` is closed, all mutations have been applied
+   * }
+   * }</pre>
+   */
+  @BetaApi("This surface is likely to change as the batching surface evolves.")
+  public BulkMutationBatcher newBulkMutationBatcher() {
+    return new BulkMutationBatcher(stub.mutateRowsCallable());
+  }
+
+  /**
+   * Convenience method to asynchronously mutate a row atomically based on the output of a filter.
+   *
+   * <p>Sample code:
+   *
+   * <pre>{@code
+   * InstanceName instanceName = InstanceName.of("[PROJECT]", "[INSTANCE]");
+   * try (BigtableClient bigtableClient = BigtableClient.create(instanceName)) {
+   *   ConditionalRowMutation mutation = ConditionalRowMutation.create("[TABLE]", "[KEY]")
+   *     .condition(FILTERS.value().regex("old-value"))
+   *     .then(
+   *       Mutation.create()
+   *         .setCell("[FAMILY]", "[QUALIFIER]", "[VALUE]")
+   *       );
+   *
+   *   ApiFuture<Boolean> future = bigtableClient.checkAndMutateRowAsync(mutation);
+   * }
+   * }</pre>
+   */
+  public ApiFuture<Boolean> checkAndMutateRowAsync(ConditionalRowMutation mutation) {
+    return checkAndMutateRowCallable().futureCall(mutation);
+  }
+
+  /**
+   * Mutates a row atomically based on the output of a filter.
+   *
+   * <p>Sample code:
+   *
+   * <pre>{@code
+   * InstanceName instanceName = InstanceName.of("[PROJECT]", "[INSTANCE]");
+   * try (BigtableClient bigtableClient = BigtableClient.create(instanceName)) {
+   *   ConditionalRowMutation mutation = ConditionalRowMutation.create("[TABLE]", "[KEY]")
+   *     .condition(FILTERS.value().regex("old-value"))
+   *     .then(
+   *       Mutation.create()
+   *         .setCell("[FAMILY]", "[QUALIFIER]", "[VALUE]")
+   *       );
+   *
+   *   boolean success = bigtableClient.checkAndMutateRowCallable().call(mutation);
+   * }
+   * }</pre>
+   */
+  public UnaryCallable<ConditionalRowMutation, Boolean> checkAndMutateRowCallable() {
+    return stub.checkAndMutateRowCallable();
+  }
+
+  /**
+   * Convenience method that asynchronously modifies a row atomically on the server. The method
+   * reads the latest existing timestamp and value from the specified columns and writes a new
+   * entry. The new value for the timestamp is the greater of the existing timestamp or the current
+   * server time. The method returns the new contents of all modified cells.
+   *
+   * <p>Sample code:
+   *
+   * <pre>{@code
+   * InstanceName instanceName = InstanceName.of("[PROJECT]", "[INSTANCE]");
+   * try (BigtableClient bigtableClient = BigtableClient.create(instanceName)) {
+   *   ReadModifyWriteRow mutation = ReadModifyWriteRow.create("[TABLE]", "[KEY]")
+   *     .increment("[FAMILY]", "[QUALIFIER]", 1)
+   *     .append("[FAMILY2]", "[QUALIFIER2]", "suffix");
+   *
+   *   ApiFuture<Row> success = bigtableClient.readModifyWriteRowAsync(mutation);
+   * }
+   * }</pre>
+   */
+  public ApiFuture<Row> readModifyWriteRowAsync(ReadModifyWriteRow mutation) {
+    return readModifyWriteRowCallable().futureCall(mutation);
+  }
+
+  /**
+   * Modifies a row atomically on the server. The method reads the latest existing timestamp and
+   * value from the specified columns and writes a new entry. The new value for the timestamp is the
+   * greater of the existing timestamp or the current server time. The method returns the new
+   * contents of all modified cells.
+   *
+   * <p>Sample code:
+   *
+   * <pre>{@code
+   * InstanceName instanceName = InstanceName.of("[PROJECT]", "[INSTANCE]");
+   * try (BigtableClient bigtableClient = BigtableClient.create(instanceName)) {
+   *   ReadModifyWriteRow mutation = ReadModifyWriteRow.create("[TABLE]", "[KEY]")
+   *     .increment("[FAMILY]", "[QUALIFIER]", 1)
+   *     .append("[FAMILY2]", "[QUALIFIER2]", "suffix");
+   *
+   *   Row row = bigtableClient.readModifyWriteRowCallable().call(mutation);
+   * }
+   * }</pre>
+   */
+  public UnaryCallable<ReadModifyWriteRow, Row> readModifyWriteRowCallable() {
+    return stub.readModifyWriteRowCallable();
   }
 
   /** Close the clients and releases all associated resources. */

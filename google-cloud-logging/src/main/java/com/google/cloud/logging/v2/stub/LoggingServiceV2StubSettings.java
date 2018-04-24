@@ -91,7 +91,7 @@ import org.threeten.bp.Duration;
  * <code>
  * LoggingServiceV2StubSettings.Builder loggingSettingsBuilder =
  *     LoggingServiceV2StubSettings.newBuilder();
- * loggingSettingsBuilder.deleteLogSettings().getRetrySettingsBuilder()
+ * loggingSettingsBuilder.deleteLogSettings().getRetrySettings().toBuilder()
  *     .setTotalTimeout(Duration.ofSeconds(30));
  * LoggingServiceV2StubSettings loggingSettings = loggingSettingsBuilder.build();
  * </code>
@@ -637,6 +637,7 @@ public class LoggingServiceV2StubSettings extends StubSettings<LoggingServiceV2S
               listLogsSettings);
     }
 
+    // NEXT_MAJOR_VER: remove 'throws Exception'
     /**
      * Applies the given settings updater function to all of the unary API methods in this service.
      *

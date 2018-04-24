@@ -57,7 +57,7 @@ import javax.annotation.Generated;
  * <code>
  * AgentsSettings.Builder agentsSettingsBuilder =
  *     AgentsSettings.newBuilder();
- * agentsSettingsBuilder.getAgentSettings().getRetrySettingsBuilder()
+ * agentsSettingsBuilder.getAgentSettings().getRetrySettings().toBuilder()
  *     .setTotalTimeout(Duration.ofSeconds(30));
  * AgentsSettings agentsSettings = agentsSettingsBuilder.build();
  * </code>
@@ -201,6 +201,7 @@ public class AgentsSettings extends ClientSettings<AgentsSettings> {
       return ((AgentsStubSettings.Builder) getStubSettings());
     }
 
+    // NEXT_MAJOR_VER: remove 'throws Exception'
     /**
      * Applies the given settings updater function to all of the unary API methods in this service.
      *

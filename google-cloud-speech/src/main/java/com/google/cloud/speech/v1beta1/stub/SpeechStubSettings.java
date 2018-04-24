@@ -72,7 +72,7 @@ import org.threeten.bp.Duration;
  * <code>
  * SpeechStubSettings.Builder speechSettingsBuilder =
  *     SpeechStubSettings.newBuilder();
- * speechSettingsBuilder.syncRecognizeSettings().getRetrySettingsBuilder()
+ * speechSettingsBuilder.syncRecognizeSettings().getRetrySettings().toBuilder()
  *     .setTotalTimeout(Duration.ofSeconds(30));
  * SpeechStubSettings speechSettings = speechSettingsBuilder.build();
  * </code>
@@ -321,6 +321,7 @@ public class SpeechStubSettings extends StubSettings<SpeechStubSettings> {
               syncRecognizeSettings, asyncRecognizeSettings);
     }
 
+    // NEXT_MAJOR_VER: remove 'throws Exception'
     /**
      * Applies the given settings updater function to all of the unary API methods in this service.
      *

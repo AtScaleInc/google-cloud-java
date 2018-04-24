@@ -62,7 +62,7 @@ import org.threeten.bp.Duration;
  * <code>
  * TraceServiceStubSettings.Builder traceServiceSettingsBuilder =
  *     TraceServiceStubSettings.newBuilder();
- * traceServiceSettingsBuilder.batchWriteSpansSettings().getRetrySettingsBuilder()
+ * traceServiceSettingsBuilder.batchWriteSpansSettings().getRetrySettings().toBuilder()
  *     .setTotalTimeout(Duration.ofSeconds(30));
  * TraceServiceStubSettings traceServiceSettings = traceServiceSettingsBuilder.build();
  * </code>
@@ -257,6 +257,7 @@ public class TraceServiceStubSettings extends StubSettings<TraceServiceStubSetti
               batchWriteSpansSettings, createSpanSettings);
     }
 
+    // NEXT_MAJOR_VER: remove 'throws Exception'
     /**
      * Applies the given settings updater function to all of the unary API methods in this service.
      *

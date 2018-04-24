@@ -95,7 +95,7 @@ import org.threeten.bp.Duration;
  * <code>
  * PublisherStubSettings.Builder topicAdminSettingsBuilder =
  *     PublisherStubSettings.newBuilder();
- * topicAdminSettingsBuilder.createTopicSettings().getRetrySettingsBuilder()
+ * topicAdminSettingsBuilder.createTopicSettings().getRetrySettings().toBuilder()
  *     .setTotalTimeout(Duration.ofSeconds(30));
  * PublisherStubSettings topicAdminSettings = topicAdminSettingsBuilder.build();
  * </code>
@@ -667,6 +667,7 @@ public class PublisherStubSettings extends StubSettings<PublisherStubSettings> {
               testIamPermissionsSettings);
     }
 
+    // NEXT_MAJOR_VER: remove 'throws Exception'
     /**
      * Applies the given settings updater function to all of the unary API methods in this service.
      *

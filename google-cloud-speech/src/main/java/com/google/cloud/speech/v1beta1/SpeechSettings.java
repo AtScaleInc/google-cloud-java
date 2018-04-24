@@ -53,7 +53,7 @@ import javax.annotation.Generated;
  * <code>
  * SpeechSettings.Builder speechSettingsBuilder =
  *     SpeechSettings.newBuilder();
- * speechSettingsBuilder.syncRecognizeSettings().getRetrySettingsBuilder()
+ * speechSettingsBuilder.syncRecognizeSettings().getRetrySettings().toBuilder()
  *     .setTotalTimeout(Duration.ofSeconds(30));
  * SpeechSettings speechSettings = speechSettingsBuilder.build();
  * </code>
@@ -168,6 +168,7 @@ public class SpeechSettings extends ClientSettings<SpeechSettings> {
       return ((SpeechStubSettings.Builder) getStubSettings());
     }
 
+    // NEXT_MAJOR_VER: remove 'throws Exception'
     /**
      * Applies the given settings updater function to all of the unary API methods in this service.
      *

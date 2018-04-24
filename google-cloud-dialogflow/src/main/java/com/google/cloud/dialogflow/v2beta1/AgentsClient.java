@@ -40,10 +40,29 @@ import javax.annotation.Generated;
 
 // AUTO-GENERATED DOCUMENTATION AND SERVICE
 /**
- * Service Description: Manages conversational agents.
+ * Service Description: Agents are best described as Natural Language Understanding (NLU) modules
+ * that transform user requests into actionable data. You can include agents in your app, product,
+ * or service to determine user intent and respond to the user in a natural way.
  *
- * <p>Refer to the [Dialogflow documentation](https://dialogflow.com/docs/agents) for more details
- * about agents. #
+ * <p>After you create an agent, you can add [Intents][google.cloud.dialogflow.v2beta1.Intents],
+ * [Contexts][google.cloud.dialogflow.v2beta1.Contexts], [Entity
+ * Types][google.cloud.dialogflow.v2beta1.EntityTypes],
+ * [Webhooks][google.cloud.dialogflow.v2beta1.WebhookRequest], and so on to manage the flow of a
+ * conversation and match user input to predefined intents and actions.
+ *
+ * <p>You can create an agent using both Dialogflow Standard Edition and Dialogflow Enterprise
+ * Edition. For details, see [Dialogflow Editions](/dialogflow-enterprise/docs/editions).
+ *
+ * <p>You can save your agent for backup or versioning by exporting the agent by using the
+ * [ExportAgent][google.cloud.dialogflow.v2beta1.Agents.ExportAgent] method. You can import a saved
+ * agent by using the [ImportAgent][google.cloud.dialogflow.v2beta1.Agents.ImportAgent] method.
+ *
+ * <p>Dialogflow provides several [prebuilt agents](https://dialogflow.com/docs/prebuilt-agents) for
+ * common conversation scenarios such as determining a date and time, converting currency, and so
+ * on.
+ *
+ * <p>For more information about agents, see the [Dialogflow
+ * documentation](https://dialogflow.com/docs/agents).
  *
  * <p>This class provides the ability to make remote calls to the backing service through method
  * calls that map to API methods. Sample code to get started:
@@ -189,7 +208,31 @@ public class AgentsClient implements BackgroundResource {
    */
   public final Agent getAgent(ProjectName parent) {
 
-    GetAgentRequest request = GetAgentRequest.newBuilder().setParent(parent.toString()).build();
+    GetAgentRequest request =
+        GetAgentRequest.newBuilder().setParent(parent == null ? null : parent.toString()).build();
+    return getAgent(request);
+  }
+
+  // AUTO-GENERATED DOCUMENTATION AND METHOD
+  /**
+   * Retrieves the specified agent.
+   *
+   * <p>Sample code:
+   *
+   * <pre><code>
+   * try (AgentsClient agentsClient = AgentsClient.create()) {
+   *   ProjectName parent = ProjectName.of("[PROJECT]");
+   *   Agent response = agentsClient.getAgent(parent.toString());
+   * }
+   * </code></pre>
+   *
+   * @param parent Required. The project that the agent to fetch is associated with. Format:
+   *     `projects/&lt;Project ID&gt;`.
+   * @throws com.google.api.gax.rpc.ApiException if the remote call fails
+   */
+  public final Agent getAgent(String parent) {
+
+    GetAgentRequest request = GetAgentRequest.newBuilder().setParent(parent).build();
     return getAgent(request);
   }
 
@@ -264,7 +307,38 @@ public class AgentsClient implements BackgroundResource {
    */
   public final SearchAgentsPagedResponse searchAgents(ProjectName parent) {
     SearchAgentsRequest request =
-        SearchAgentsRequest.newBuilder().setParent(parent.toString()).build();
+        SearchAgentsRequest.newBuilder()
+            .setParent(parent == null ? null : parent.toString())
+            .build();
+    return searchAgents(request);
+  }
+
+  // AUTO-GENERATED DOCUMENTATION AND METHOD
+  /**
+   * Returns the list of agents.
+   *
+   * <p>Since there is at most one conversational agent per project, this method is useful primarily
+   * for listing all agents across projects the caller has access to. One can achieve that with a
+   * wildcard project collection id "-". Refer to [List
+   * Sub-Collections](https://cloud.google.com/apis/design/design_patterns#list_sub-collections).
+   *
+   * <p>Sample code:
+   *
+   * <pre><code>
+   * try (AgentsClient agentsClient = AgentsClient.create()) {
+   *   ProjectName parent = ProjectName.of("[PROJECT]");
+   *   for (Agent element : agentsClient.searchAgents(parent.toString()).iterateAll()) {
+   *     // doThingsWith(element);
+   *   }
+   * }
+   * </code></pre>
+   *
+   * @param parent Required. The project to list agents from. Format: `projects/&lt;Project ID or
+   *     '-'&gt;`.
+   * @throws com.google.api.gax.rpc.ApiException if the remote call fails
+   */
+  public final SearchAgentsPagedResponse searchAgents(String parent) {
+    SearchAgentsRequest request = SearchAgentsRequest.newBuilder().setParent(parent).build();
     return searchAgents(request);
   }
 
@@ -386,7 +460,34 @@ public class AgentsClient implements BackgroundResource {
    */
   public final OperationFuture<Empty, Struct> trainAgentAsync(ProjectName parent) {
 
-    TrainAgentRequest request = TrainAgentRequest.newBuilder().setParent(parent.toString()).build();
+    TrainAgentRequest request =
+        TrainAgentRequest.newBuilder().setParent(parent == null ? null : parent.toString()).build();
+    return trainAgentAsync(request);
+  }
+
+  // AUTO-GENERATED DOCUMENTATION AND METHOD
+  /**
+   * Trains the specified agent.
+   *
+   * <p>Operation &lt;response: [google.protobuf.Empty][google.protobuf.Empty], metadata:
+   * [google.protobuf.Struct][google.protobuf.Struct]&gt;
+   *
+   * <p>Sample code:
+   *
+   * <pre><code>
+   * try (AgentsClient agentsClient = AgentsClient.create()) {
+   *   ProjectName parent = ProjectName.of("[PROJECT]");
+   *   Empty response = agentsClient.trainAgentAsync(parent.toString()).get();
+   * }
+   * </code></pre>
+   *
+   * @param parent Required. The project that the agent to train is associated with. Format:
+   *     `projects/&lt;Project ID&gt;`.
+   * @throws com.google.api.gax.rpc.ApiException if the remote call fails
+   */
+  public final OperationFuture<Empty, Struct> trainAgentAsync(String parent) {
+
+    TrainAgentRequest request = TrainAgentRequest.newBuilder().setParent(parent).build();
     return trainAgentAsync(request);
   }
 
@@ -490,7 +591,36 @@ public class AgentsClient implements BackgroundResource {
   public final OperationFuture<ExportAgentResponse, Struct> exportAgentAsync(ProjectName parent) {
 
     ExportAgentRequest request =
-        ExportAgentRequest.newBuilder().setParent(parent.toString()).build();
+        ExportAgentRequest.newBuilder()
+            .setParent(parent == null ? null : parent.toString())
+            .build();
+    return exportAgentAsync(request);
+  }
+
+  // AUTO-GENERATED DOCUMENTATION AND METHOD
+  /**
+   * Exports the specified agent to a ZIP file.
+   *
+   * <p>Operation &lt;response:
+   * [ExportAgentResponse][google.cloud.dialogflow.v2beta1.ExportAgentResponse], metadata:
+   * [google.protobuf.Struct][google.protobuf.Struct]&gt;
+   *
+   * <p>Sample code:
+   *
+   * <pre><code>
+   * try (AgentsClient agentsClient = AgentsClient.create()) {
+   *   ProjectName parent = ProjectName.of("[PROJECT]");
+   *   ExportAgentResponse response = agentsClient.exportAgentAsync(parent.toString()).get();
+   * }
+   * </code></pre>
+   *
+   * @param parent Required. The project that the agent to export is associated with. Format:
+   *     `projects/&lt;Project ID&gt;`.
+   * @throws com.google.api.gax.rpc.ApiException if the remote call fails
+   */
+  public final OperationFuture<ExportAgentResponse, Struct> exportAgentAsync(String parent) {
+
+    ExportAgentRequest request = ExportAgentRequest.newBuilder().setParent(parent).build();
     return exportAgentAsync(request);
   }
 
@@ -747,7 +877,7 @@ public class AgentsClient implements BackgroundResource {
   }
 
   @Override
-  public final void close() throws Exception {
+  public final void close() {
     stub.close();
   }
 
