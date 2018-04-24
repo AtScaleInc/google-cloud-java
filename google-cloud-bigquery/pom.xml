@@ -107,4 +107,14 @@
       </plugin>
     </plugins>
   </build>
+
+<!--AtScale:  Add our own artifact server to use for deploy-->
+  <distributionManagement>
+    <repository>
+      <id>atscale</id>
+      <name>atscale-releases</name>
+      <url>http://artifactory.corp.atscale.com/ext-packages</url>
+    </repository>
+  </distributionManagement>
+
 </project>
