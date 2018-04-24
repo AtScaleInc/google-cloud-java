@@ -145,7 +145,7 @@ final class BigQueryImpl extends BaseService<BigQueryOptions> implements BigQuer
 
     @Override
     public Page<FieldValueList> getNextPage() {
-      GetQueryResultsResponse response = serviceOptions.getBigQueryRpcV2().getQueryResults(jobId.getProject(), jobId.getJob(), requestOptions);
+      GetQueryResultsResponse response = serviceOptions.getBigQueryRpcV2().getQueryResults(jobId.getProject(), jobId.getJob(), jobId.getLocation(), requestOptions);
       QueryResponsePageFetcher fetcher = new QueryResponsePageFetcher(jobId, serviceOptions, response.getPageToken(), requestOptions);
       return new PageImpl<>(fetcher, response.getPageToken(), transformTableData(response.getRows()));
     }
