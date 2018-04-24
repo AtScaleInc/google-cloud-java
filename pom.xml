@@ -579,6 +579,8 @@
 	  <showDeprecation>true</showDeprecation>
         </configuration>
       </plugin>
+
+<!-- AtScale (Joe Barefoot):  This is problematic for our build server so we disabled it.
       <plugin>
         <groupId>org.apache.maven.plugins</groupId>
         <artifactId>maven-gpg-plugin</artifactId>
@@ -593,6 +595,8 @@
           </execution>
         </executions>
       </plugin>
+-->
+
       <plugin>
         <groupId>org.sonatype.plugins</groupId>
         <artifactId>nexus-staging-maven-plugin</artifactId>
