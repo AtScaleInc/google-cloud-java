@@ -111,18 +111,35 @@
     <url>https://github.com/GoogleCloudPlatform/google-cloud-java/issues</url>
     <system>GitHub Issues</system>
   </issueManagement>
-  <licenses>
-    <license>
-      <name>Google Cloud Software License</name>
-      <url>https://raw.githubusercontent.com/GoogleCloudPlatform/google-cloud-java/master/LICENSE</url>
-    </license>
-  </licenses>
-  <properties>
-    <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
-    <project.reporting.outputEncoding>UTF-8</project.reporting.outputEncoding>
-    <github.global.server>github</github.global.server>
-    <site.installationModule>google-cloud</site.installationModule>
-    <bom.version>0.45.0-alpha</bom.version><!-- {x-version-update:google-cloud-pom:current} -->
+  <!-- AtScale (Joe Barefoot):  This is problematic for our build server so we disabled it.
+    <distributionManagement>
+      <snapshotRepository>
+        <id>sonatype-nexus-snapshots</id>
+        <url>https://oss.sonatype.org/content/repositories/snapshots</url>
+      </snapshotRepository>
+      <repository>
+        <id>sonatype-nexus-staging</id>
+        <url>https://oss.sonatype.org/service/local/staging/deploy/maven2/</url>
+      </repository>
+      <site>
+        <id>github-pages-site</id>
+        <name>Deployment through GitHub's site deployment plugin</name>
+        <url>site</url>
+      </site>
+    </distributionManagement>
+    -->
+    <licenses>
+      <license>
+        <name>Google Cloud Software License</name>
+        <url>https://raw.githubusercontent.com/GoogleCloudPlatform/google-cloud-java/master/LICENSE</url>
+      </license>
+    </licenses>
+    <properties>
+      <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
+      <project.reporting.outputEncoding>UTF-8</project.reporting.outputEncoding>
+      <github.global.server>github</github.global.server>
+      <site.installationModule>google-cloud</site.installationModule>
+      <bom.version>0.45.0-alpha</bom.version><!-- {x-version-update:google-cloud-pom:current} -->
     <api-client.version>1.23.0</api-client.version>
     <gax.version>1.23.0</gax.version>
     <google.auth.version>0.9.0</google.auth.version>
@@ -580,7 +597,7 @@
           </execution>
         </executions>
       </plugin>
--->
+
 
       <plugin>
         <groupId>org.sonatype.plugins</groupId>
@@ -593,6 +610,8 @@
           <autoReleaseAfterClose>false</autoReleaseAfterClose>
         </configuration>
       </plugin>
+-->
+
       <plugin>
         <groupId>org.eluder.coveralls</groupId>
         <artifactId>coveralls-maven-plugin</artifactId>
