@@ -1,0 +1,42 @@
+{
+  "updateTime": "2019-03-16T07:43:23.809130Z",
+  "sources": [
+    {
+      "generator": {
+        "name": "artman",
+        "version": "0.16.17",
+        "dockerImage": "googleapis/artman@sha256:7231f27272231a884e09edb5953148c85ecd8467780d33c4a35c3e507885715b"
+      }
+    },
+    {
+      "git": {
+        "name": "googleapis",
+        "remote": "https://github.com/googleapis/googleapis.git",
+        "sha": "dab002e28c81adcc5601278c36d4302c2624c8e2",
+        "internalRef": "238726437"
+      }
+    }
+  ],
+  "destinations": [
+    {
+      "client": {
+        "source": "googleapis",
+        "apiName": "firestore",
+        "apiVersion": "v1beta1",
+        "language": "java",
+        "generator": "gapic",
+        "config": "google/firestore/artman_firestore.yaml"
+      }
+    },
+    {
+      "client": {
+        "source": "googleapis",
+        "apiName": "firestore",
+        "apiVersion": "v1",
+        "language": "java",
+        "generator": "gapic",
+        "config": "google/firestore/artman_firestore_v1.yaml"
+      }
+    }
+  ]
+}

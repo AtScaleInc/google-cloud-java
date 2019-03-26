@@ -1,89 +1,125 @@
 Google Cloud Client Library for Java
-==========================
+====================================
 
 Java idiomatic client for [Google Cloud Platform][cloud-platform] services.
 
-[![CircleCI](https://circleci.com/gh/GoogleCloudPlatform/google-cloud-java/tree/master.svg?style=shield)](https://circleci.com/gh/GoogleCloudPlatform/google-cloud-java/tree/master)
-[![Coverage Status](https://coveralls.io/repos/GoogleCloudPlatform/google-cloud-java/badge.svg?branch=master)](https://coveralls.io/r/GoogleCloudPlatform/google-cloud-java?branch=master)
-[![Maven](https://img.shields.io/maven-central/v/com.google.cloud/google-cloud.svg)](http://search.maven.org/#search%7Cga%7C1%7Cg%3A%22com.google.cloud%22%20a%3A%22google-cloud%22)
+[![Kokoro CI](http://storage.googleapis.com/cloud-devrel-public/java/badges/google-cloud-java/master.svg)](http://storage.googleapis.com/cloud-devrel-public/java/badges/google-cloud-java/master.html)
+[![Maven](https://img.shields.io/maven-central/v/com.google.cloud/google-cloud-bom.svg)](https://search.maven.org/search?q=g:com.google.cloud%20a:google-cloud-bom)
 [![Codacy Badge](https://api.codacy.com/project/badge/grade/9da006ad7c3a4fe1abd142e77c003917)](https://www.codacy.com/app/mziccard/google-cloud-java)
-[![Dependency Status](https://www.versioneye.com/user/projects/58fe4c8d6ac171426c414772/badge.svg?style=flat)](https://www.versioneye.com/user/projects/58fe4c8d6ac171426c414772)
 
 - [Google Cloud Platform Documentation][cloud-platform-docs]
 - [Client Library Documentation][client-lib-docs]
 
 This library supports the following Google Cloud Platform services with clients at a [GA](#versioning) quality level:
--  [BigQuery](google-cloud-bigquery) (GA)
--  [Stackdriver Logging](google-cloud-logging) (GA)
--  [Cloud Datastore](google-cloud-datastore) (GA)
--  [Cloud Natural Language](google-cloud-language) (GA)
--  [Cloud Storage](google-cloud-storage) (GA)
--  [Cloud Translation](google-cloud-translate) (GA)
--  [Cloud Vision](google-cloud-vision) (GA)
+-  [BigQuery](google-cloud-clients/google-cloud-bigquery) (GA)
+-  [Cloud Datastore](google-cloud-clients/google-cloud-datastore) (GA)
+-  [Cloud Natural Language](google-cloud-clients/google-cloud-language) (GA)
+-  [Cloud Pub/Sub](google-cloud-clients/google-cloud-pubsub) (GA)
+-  [Cloud Spanner](google-cloud-clients/google-cloud-spanner) (GA)
+-  [Cloud Storage](google-cloud-clients/google-cloud-storage) (GA)
+-  [Cloud Translation](google-cloud-clients/google-cloud-translate) (GA)
+-  [Cloud Vision](google-cloud-clients/google-cloud-vision) (GA)
+-  [Stackdriver Logging](google-cloud-clients/google-cloud-logging) (GA)
+-  [Stackdriver Monitoring](google-cloud-clients/google-cloud-monitoring) (GA)
 
 This library supports the following Google Cloud Platform services with clients at a [Beta](#versioning) quality level:
 
--  [Cloud Data Loss Prevention](google-cloud-dlp) (Beta)
--  [Stackdriver Error Reporting](google-cloud-errorreporting) (Beta)
--  [Cloud Firestore](google-cloud-firestore) (Beta)
--  [Stackdriver Monitoring](google-cloud-monitoring) (Beta)
--  [Cloud Pub/Sub](google-cloud-pubsub) (Beta)
--  [Cloud Spanner](google-cloud-spanner) (Beta)
--  [Cloud Video Intelligence](google-cloud-video-intelligence) (Beta)
--  [Stackdriver Trace](google-cloud-trace) (Beta)
--  [Text-to-Speech](google-cloud-texttospeech) (Beta)
+-  [BigQuery Data Transfer](google-cloud-clients/google-cloud-bigquerydatatransfer) (Beta)
+-  [Cloud Asset](google-cloud-clients/google-cloud-asset) (Beta)
+-  [Cloud AutoML](google-cloud-clients/google-cloud-automl) (Beta)
+-  [Cloud Container Analysis](google-cloud-clients/google-cloud-containeranalysis) (Beta)
+-  [Cloud Data Loss Prevention](google-cloud-clients/google-cloud-dlp) (Beta)
+-  [Cloud Firestore](google-cloud-clients/google-cloud-firestore) (Beta)
+-  [Cloud IoT Core](google-cloud-clients/google-cloud-iot) (Beta)
+-  [Cloud KMS](google-cloud-clients/google-cloud-kms) (Beta)
+-  [Cloud Speech](google-cloud-clients/google-cloud-speech) (Beta)
+-  [Cloud Text-to-Speech](google-cloud-clients/google-cloud-texttospeech) (Beta)
+-  [Cloud Video Intelligence](google-cloud-clients/google-cloud-video-intelligence) (Beta)
+-  [Kubernetes Engine](google-cloud-clients/google-cloud-container) (Beta)
+-  [Stackdriver Error Reporting](google-cloud-clients/google-cloud-errorreporting) (Beta)
+-  [Stackdriver Trace](google-cloud-clients/google-cloud-trace) (Beta)
 
 This library supports the following Google Cloud Platform services with clients at an [Alpha](#versioning) quality level:
 
--  [Cloud Dataproc](google-cloud-dataproc) (Alpha)
--  [Cloud DNS](google-cloud-dns) (Alpha)
--  [Cloud OS Login](google-cloud-os-login) (Alpha)
--  [Cloud Resource Manager](google-cloud-resourcemanager) (Alpha)
--  [Cloud Speech](google-cloud-speech) (Alpha)
--  [Dialogflow](google-cloud-dialogflow) (Alpha)
-
-These libraries are deprecated and no longer receive updates:
-
--  [Cloud Compute](google-cloud-compute) (Deprecated)
+-  [Cloud Bigtable](google-cloud-clients/google-cloud-bigtable) (Alpha)
+-  [Cloud Compute](google-cloud-clients/google-cloud-compute) (Alpha)
+-  [Cloud Dataproc](google-cloud-clients/google-cloud-dataproc) (Alpha)
+-  [Cloud DNS](google-cloud-clients/google-cloud-dns) (Alpha)
+-  [Cloud OS Login](google-cloud-clients/google-cloud-os-login) (Alpha)
+-  [Cloud Memorystore for Redis](google-cloud-clients/google-cloud-redis) (Alpha)
+-  [Cloud Resource Manager](google-cloud-clients/google-cloud-resourcemanager) (Alpha)
+-  [Cloud Security Scanner](google-cloud-clients/google-cloud-websecurityscanner) (Alpha)
+-  [Dialogflow](google-cloud-clients/google-cloud-dialogflow) (Alpha)
 
 Quickstart
 ----------
 
-The easy way to get started is to add the umbrella package which pulls in all of the supported clients as
-dependencies. Note that even though the version of the umbrella package is Alpha, the individual clients are
-at different support levels (Alpha, Beta, and GA).
+To call any of the supported Google Cloud Services simply add a corresponding client library 
+artifact as a dependency to your project. The following instructions use `google-cloud-storage` 
+as an example (specific instructions can be found in the README of each client).
 
-[//]: # ({x-version-update-start:google-cloud:released})
+[//]: # ({x-version-update-start:google-cloud-bom:released})
 If you are using Maven, add this to your pom.xml file
 ```xml
-<dependency>
-  <groupId>com.google.cloud</groupId>
-  <artifactId>google-cloud</artifactId>
-  <version>0.45.0-alpha</version>
-</dependency>
-```
-If you are using Gradle, add this to your dependencies
-```Groovy
-compile 'com.google.cloud:google-cloud:0.45.0-alpha'
-```
-If you are using SBT, add this to your dependencies
-```Scala
-libraryDependencies += "com.google.cloud" % "google-cloud" % "0.45.0-alpha"
+  <dependencyManagement>
+    <dependencies>
+      <dependency>
+        <groupId>com.google.cloud</groupId>
+        <artifactId>google-cloud-bom</artifactId>
+        <version>0.84.0-alpha</version>
+        <type>pom</type>
+        <scope>import</scope>
+       </dependency>
+     </dependencies>
+  </dependencyManagement>
+
+  <dependencies>
+    <dependency>
+      <groupId>com.google.cloud</groupId>
+      <artifactId>google-cloud-storage</artifactId>
+    </dependency>
+    ...
 ```
 [//]: # ({x-version-update-end})
 
-It also works just as well to declare a dependency only on the specific clients that you need. See the README of
-each client for instructions.
+[//]: # ({x-version-update-start:google-cloud-storage:released})
+If you are using Gradle, add this to your dependencies
+```Groovy
+compile 'com.google.cloud:google-cloud-storage:1.66.0'
+```
+If you are using SBT, add this to your dependencies
+```Scala
+libraryDependencies += "com.google.cloud" % "google-cloud-storage" % "1.66.0"
+```
+[//]: # ({x-version-update-end})
 
-If you're using IntelliJ or Eclipse, you can add client libraries to your project using these IDE plugins: 
-* [Cloud Tools for IntelliJ](https://cloud.google.com/tools/intellij/docs/client-libraries)
-* [Cloud Tools for Eclipse](https://cloud.google.com/eclipse/docs/libraries)
+If you're using IntelliJ or Eclipse, you can add client libraries to your project using these IDE plugins:
+* [Cloud Tools for IntelliJ](https://cloud.google.com/tools/intellij/docs/client-libraries?utm_source=github&utm_medium=google-cloud-java&utm_campaign=ToolsforIntelliJ)
+* [Cloud Tools for Eclipse](https://cloud.google.com/eclipse/docs/libraries?utm_source=github&utm_medium=google-cloud-java&utm_campaign=ToolsforEclipse)
 
 Besides adding client libraries, the plugins provide additional functionality, such as service account key management. Refer to the documentation for each plugin for more details.
 
-These client libraries can be used on App Engine standard for Java 8 runtime, App Engine flexible (including the Compat runtime).  Most of the libraries do not work on the App Engine standard for Java 7 runtime, however, Datastore, Storage, and Bigquery should work.
+These client libraries can be used on App Engine standard for Java 8 runtime and App Engine flexible (including the Compat runtime).  Most of the libraries do not work on the App Engine standard for Java 7 runtime. However, Datastore, Storage, and Bigquery should work.
 
-If you are running into problems with version conflicts, see [Version Management](#version-management).
+If you are running into problems with version conflicts, the easiest way to solve the conflicts is to use google-cloud's BOM. In Maven, add the following to your POM:
+
+[//]: # ({x-version-update-start:google-cloud-bom:released})
+```xml
+  <dependencyManagement>
+    <dependencies>
+      <dependency>
+        <groupId>com.google.cloud</groupId>
+        <artifactId>google-cloud-bom</artifactId>
+        <version>0.84.0-alpha</version>
+        <type>pom</type>
+        <scope>import</scope>
+      </dependency>
+    </dependencies>
+  </dependencyManagement>
+```
+[//]: # ({x-version-update-end})
+
+Note that the BOM is only available starting at version 0.32.0-alpha. For prior versions, refer to [Old Version Combinations](#old-version-combinations) to make sure that your versions are compatible.
 
 Specifying a Project ID
 -----------------------
@@ -108,10 +144,9 @@ Most `google-cloud` libraries require a project ID.  There are multiple ways to 
 
 1. The project ID supplied when building the service options
 2. Project ID specified by the environment variable `GOOGLE_CLOUD_PROJECT`
-3. The App Engine project ID
+3. The App Engine / Compute Engine project ID
 4. The project ID specified in the JSON credentials file pointed by the `GOOGLE_APPLICATION_CREDENTIALS` environment variable
 5. The Google Cloud SDK project ID
-6. The Compute Engine project ID
 
 In cases where the library may expect a project ID explicitly, we provide a helper that can provide the inferred project ID:
    ```java
@@ -132,7 +167,7 @@ details.
 
 To access Google Cloud services, you first need to ensure that the necessary Google Cloud APIs are
 enabled for your project. To do this, follow the instructions on the
-[authentication document](https://github.com/GoogleCloudPlatform/gcloud-common/blob/master/authentication/readme.md#authentication)
+[authentication document](https://github.com/googleapis/google-cloud-common/blob/master/authentication/readme.md#authentication)
 shared by all the Google Cloud language libraries.
 
 Next, choose a method for authenticating API requests from within your project:
@@ -166,7 +201,7 @@ Storage storage = StorageOptions.getDefaultInstance().getService();
   case, the access token will not be automatically refreshed):
   ```java
   Storage storage = StorageOptions.newBuilder()
-      .setCredentials(new GoogleCredentials(new AccessToken(accessToken, expirationTime)))
+      .setCredentials(GoogleCredentials.create(new AccessToken(accessToken, expirationTime)))
       .build()
       .getService();
   ```
@@ -184,7 +219,7 @@ Credentials in the following locations (in order):
 Troubleshooting
 ---------------
 
-To get help, follow the instructions in the [Troubleshooting document](https://github.com/GoogleCloudPlatform/google-cloud-java/blob/master/TROUBLESHOOTING.md).
+To get help, follow the instructions in the [Troubleshooting document](https://github.com/googleapis/google-cloud-java/blob/master/TROUBLESHOOTING.md).
 
 Using a proxy
 -------------
@@ -219,7 +254,11 @@ threading restrictions.
 
 Thus, the following are not supported:
 
-- Android
+- Android 
+  - Consider [Firebase](https://firebase.google.com), which includes many of these APIs.
+  - It is possible to use these libraries in many cases, although it is unsupported.
+    You can find examples, such as [this one](https://github.com/GoogleCloudPlatform/android-docs-samples/tree/master/speech/SpeechRecognitionClient),
+    in this [example repository](https://github.com/GoogleCloudPlatform/android-docs-samples) but consider the risks carefully before using these libraries in an application.
 - Alpine Linux (due to netty-tcnative requiring glibc, which is not present on Alpine)
 - Raspberry Pi (since it runs on the ARM architecture)
 - Google App Engine Standard Java 7
@@ -280,69 +319,12 @@ a higher priority.
 are more likely to get backwards-incompatible updates. Additionally, it's possible for Alpha
 libraries to get deprecated and deleted before ever being promoted to Beta or GA.
 
-Version Management
-------------------
-
-The easiest way to solve version conflicts is to use google-cloud's BOM. In Maven, add the following to your POM:
-
-[//]: # ({x-version-update-start:google-cloud-bom:released})
-```xml
-  <dependencyManagement>
-    <dependencies>
-      <dependency>
-        <groupId>com.google.cloud</groupId>
-        <artifactId>google-cloud-bom</artifactId>
-        <version>0.45.0-alpha</version>
-        <type>pom</type>
-        <scope>import</scope>
-      </dependency>
-    </dependencies>
-  </dependencyManagement>
-```
-[//]: # ({x-version-update-end})
-
-This BOM is only available starting at version 0.32.0-alpha. If you are having problems with prior versions of
-google-cloud, use the following table as a reference to make sure that your versions are compatible. Definitions:
-
-* **alpha**: The version of any alpha package in google-cloud
-* **beta**: The version of any beta package in google-cloud
-* **GA**: The version of any GA package in google-cloud
-* **gax**: The version of com.google.api:gax
-* **gax-grpc**: The version of com.google.api:gax-grpc
-
-Something to be aware of is that a package can be promoted from alpha -> beta or beta -> GA between versions, which
-means that after a certain point for any given package, the alpha or beta version won't be valid any more.
-
-alpha         | beta         | GA         | gax        | gax-grpc
-------------- | ------------ | ---------- | ---------- | --------
-0.30.0-alpha  | 0.30.0-beta  | 1.12.0     | 1.15.0     | 1.15.0
-0.29.0-alpha  | 0.29.0-beta  | 1.11.0     | 1.15.0     | 1.15.0
-0.28.0-alpha  | 0.28.0-beta  | 1.10.0     | 1.14.0     | 1.14.0
-0.27.0-alpha  | 0.27.0-beta  | 1.9.0      | 1.13.0     | 0.30.0
-0.26.0-alpha  | 0.26.0-beta  | 1.8.0      | 1.9.0      | 0.26.0
-0.25.0-alpha  | 0.25.0-beta  | 1.7.0      | 1.8.1      | 0.25.1
-0.24.0-alpha  | 0.24.0-beta  | 1.6.0      | 1.8.1      | 0.25.1
-0.23.1-alpha  | 0.23.1-beta  | 1.5.1      | 1.8.1      | 0.25.1
-0.23.0-alpha  | 0.23.0-beta  | 1.5.0      | 1.5.0      | 0.22.0
-0.22.0-alpha  | 0.22.0-beta  | 1.4.0      | 1.5.0      | 0.22.0
-0.21.1-alpha  | 0.21.1-beta  | 1.3.1      | 1.5.0      | 0.22.0
-0.21.0-alpha  | 0.21.0-beta  | 1.3.0      | 1.5.0      | 0.22.0
-0.20.3-alpha  | 0.20.3-beta  | 1.2.3      | 1.4.2      | 0.21.2
-0.20.2-alpha  | 0.20.2-beta  | 1.2.2      | 1.4.2      | 0.21.2
-0.20.1-alpha  | 0.20.1-beta  | 1.2.1      | 1.4.1      | 0.21.1
-0.20.0-alpha  | 0.20.0-beta  | 1.2.0      | 1.3.1      | 0.20.0
-0.19.0-alpha  | 0.19.0-beta  | 1.1.0      | 1.3.0      | 0.19.0
-0.18.0-alpha  | 0.18.0-beta  | 1.0.2      | 1.1.0      | 0.17.0
-0.17.2-alpha  | 0.17.2-beta  | 1.0.1      | 1.0.0      | 0.16.0
-0.17.1-alpha  | 0.17.1-beta  | 1.0.0      | 1.0.0      | 0.16.0
-0.17.0-alpha  | 0.17.0-beta  | 1.0.0-rc4  | 1.0.0-rc1  | 0.15.0
-
 Contributing
 ------------
 
 Contributions to this library are always welcome and highly encouraged.
 
-See `google-cloud`'s [CONTRIBUTING] documentation and the [shared documentation](https://github.com/GoogleCloudPlatform/gcloud-common/blob/master/contributing/readme.md#how-to-contribute-to-gcloud) for more information on how to get started.
+See `google-cloud`'s [CONTRIBUTING] documentation and the [shared documentation](https://github.com/googleapis/google-cloud-common/blob/master/contributing/readme.md#how-to-contribute-to-gcloud) for more information on how to get started.
 
 Please note that this project is released with a Contributor Code of Conduct. By participating in this project you agree to abide by its terms. See [Code of Conduct][code-of-conduct] for more information.
 
@@ -352,11 +334,12 @@ License
 Apache 2.0 - See [LICENSE] for more information.
 
 
-[CONTRIBUTING]:https://github.com/GoogleCloudPlatform/google-cloud-java/blob/master/CONTRIBUTING.md
-[code-of-conduct]:https://github.com/GoogleCloudPlatform/google-cloud-java/blob/master/CODE_OF_CONDUCT.md#contributor-code-of-conduct
-[LICENSE]: https://github.com/GoogleCloudPlatform/google-cloud-java/blob/master/LICENSE
-[TESTING]: https://github.com/GoogleCloudPlatform/google-cloud-java/blob/master/TESTING.md
+[CONTRIBUTING]:https://github.com/googleapis/google-cloud-java/blob/master/CONTRIBUTING.md
+[code-of-conduct]:https://github.com/googleapis/google-cloud-java/blob/master/CODE_OF_CONDUCT.md#contributor-code-of-conduct
+[LICENSE]: https://github.com/googleapis/google-cloud-java/blob/master/LICENSE
+[TESTING]: https://github.com/googleapis/google-cloud-java/blob/master/TESTING.md
 
 [cloud-platform]: https://cloud.google.com/
 [cloud-platform-docs]: https://cloud.google.com/docs/
-[client-lib-docs]: http://googlecloudplatform.github.io/google-cloud-java/latest/apidocs/
+[client-lib-docs]: https://googleapis.github.io/google-cloud-java/google-cloud-clients/apidocs/index.html
+

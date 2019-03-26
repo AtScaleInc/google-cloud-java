@@ -56,14 +56,15 @@ To use the `prod` environment:
 2. Download the [JSON service account credentials file][create-service-account] from the Google 
    Developer's Console.
 3. Set the environment variable `GOOGLE_APPLICATION_CREDENTIALS` to the path of the credentials file
-4. Set the system property `bigtable.env=prod` and `bigtable.table` to the full table name you 
-    created earlier. Example: 
+4. Set the system property `bigtable.env=prod`, `bigtable.project`, `bigtable.instance` and
+   `bigtable.table` to created earlier. Example: 
     ```shell
     mvn verify -am -pl google-cloud-bigtable \
       -Dbigtable.env=prod \
-      -Dbigtable.table=projects/my-project/instances/my-instance/tables/my-table
+      -Dbigtable.project=my-project
+      -Dbigtable.instance=my-instance
+      -Dbigtable.table=my-table
     ```
-
 
 ### Testing code that uses Compute
 
@@ -155,50 +156,11 @@ uses the `RemoteLoggingHelper` to create a metric.
 
 You can test against a Pub/Sub emulator:
 
-1. [Install Cloud SDK](https://cloud.google.com/sdk/downloads)
+1. [Set up the emulator](https://cloud.google.com/pubsub/docs/emulator)
 
-2. Start the emulator:
-```shell
-$ gcloud beta emulators pubsub start
-```
+### Testing code that uses Redis
 
-To determine which host/port the emulator is running on:
-```shell
-$ gcloud beta emulators pubsub env-init
-# Sample output:
-#   export PUBSUB_EMULATOR_HOST=localhost:8759
-```
-
-3. Point your client to the emulator.
-```java
-String hostport = System.getenv("PUBSUB_EMULATOR_HOST");
-ManagedChannel channel = ManagedChannelBuilder.forTarget(hostport).usePlaintext(true).build();
-try {
-  ChannelProvider channelProvider = FixedChannelProvider.create(channel);
-  CredentialsProvider credentialsProvider = new NoCredentialsProvider();
-
-  // Similarly for SubscriptionAdminSettings
-  TopicAdminClient topicClient = TopicAdminClient.create(
-    TopicAdminSettings
-      .defaultBuilder()
-        .setTransportProvider(
-            GrpcTransportProvider.newBuilder()
-                .setChannelProvider(channelProvider)
-                .build())
-      .setCredentialsProvider(credentialsProvider)
-      .build());
-
-  // Similarly for Subscriber
-  Publisher publisher =
-    Publisher
-      .defaultBuilder(topicName)
-      .setChannelProvider(channelProvider)
-      .setCredentialsProvider(credentialsProvider)
-      .build();
-} finally {
-  channel.shutdown();
-}
-```
+Currently, there isn't an emulator for Redis. An alternative is to create a test project.
 
 ### Testing code that uses Resource Manager
 
@@ -329,4 +291,4 @@ Here is an example that uses the `RemoteSpannerHelper` to create a database.
 [cloud-platform-authentication]:https://cloud.google.com/docs/authentication/getting-started
 [cloud-platform-storage-authentication]:https://cloud.google.com/storage/docs/authentication?hl=en#service_accounts
 [create-service-account]:https://developers.google.com/identity/protocols/OAuth2ServiceAccount#creatinganaccount
-[cloud-nio]:https://github.com/GoogleCloudPlatform/google-cloud-java/tree/master/google-cloud-contrib/google-cloud-nio
+[cloud-nio]:https://github.com/googleapis/google-cloud-java/tree/master/google-cloud-clients/google-cloud-contrib/google-cloud-nio

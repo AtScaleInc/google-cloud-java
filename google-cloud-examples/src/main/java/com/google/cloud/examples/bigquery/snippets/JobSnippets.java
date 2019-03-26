@@ -28,7 +28,6 @@ import com.google.cloud.bigquery.BigQuery;
 import com.google.cloud.bigquery.BigQueryException;
 import com.google.cloud.bigquery.Job;
 import com.google.cloud.bigquery.JobStatus;
-
 import org.threeten.bp.Duration;
 
 public class JobSnippets {
@@ -39,38 +38,32 @@ public class JobSnippets {
     this.job = job;
   }
 
-  /**
-   * Example of checking that a job exists.
-   */
+  /** Example of checking that a job exists. */
   // [TARGET exists()]
   public boolean exists() throws InterruptedException {
-    // [START exists]
+    // [START ]
     if (!job.exists()) {
       // job doesn't exist
     }
-    // [END exists]
+    // [END ]
     return job.exists();
   }
 
-  /**
-   * Example of waiting for a job until it reports that it is done.
-   */
+  /** Example of waiting for a job until it reports that it is done. */
   // [TARGET isDone()]
   public void isDone() throws InterruptedException {
-    // [START isDone]
+    // [START ]
     while (!job.isDone()) {
       Thread.sleep(1000L);
     }
-    // [END isDone]
+    // [END ]
   }
 
-  /**
-   * Example usage of {@code waitFor()}.
-   */
+  /** Example usage of {@code waitFor()}. */
   // [TARGET waitFor(RetryOption...)]
   public boolean waitFor() throws InterruptedException {
     try {
-      // [START waitFor]
+      // [START ]
       Job completedJob = job.waitFor();
       if (completedJob == null) {
         // job no longer exists
@@ -79,7 +72,7 @@ public class JobSnippets {
       } else {
         // job completed successfully
       }
-      // [END waitFor]
+      // [END ]
     } catch (BigQueryException e) {
       // Timeouts shouldn't happen without a timeout option.
       if (e.getCause() instanceof PollException) {
@@ -90,13 +83,11 @@ public class JobSnippets {
     return true;
   }
 
-  /**
-   * Example usage of {@code waitFor()} with checking period and timeout.
-   */
+  /** Example usage of {@code waitFor()} with checking period and timeout. */
   // [TARGET waitFor(RetryOption...)]
   public boolean waitForWithOptions() throws InterruptedException {
     try {
-      // [START waitForWithOptions]
+      // [START ]
       Job completedJob =
           job.waitFor(
               RetryOption.initialRetryDelay(Duration.ofSeconds(1)),
@@ -108,7 +99,7 @@ public class JobSnippets {
       } else {
         // job completed successfully
       }
-      // [END waitForWithOptions]
+      // [END ]
     } catch (BigQueryException e) {
       if (e.getCause() instanceof PollException) {
         return false;
@@ -118,46 +109,40 @@ public class JobSnippets {
     return true;
   }
 
-  /**
-   * Example of reloading all fields until job status is DONE.
-   */
+  /** Example of reloading all fields until job status is DONE. */
   // [TARGET reload(JobOption...)]
   public JobStatus.State reload() throws InterruptedException {
-    // [START reload]
-    while (job.getStatus().getState() != JobStatus.State.DONE) {
+    // [START ]
+    while (!JobStatus.State.DONE.equals(job.getStatus().getState())) {
       Thread.sleep(1000L);
       job = job.reload();
     }
-    // [END reload]
+    // [END ]
     return job.getStatus().getState();
   }
 
-  /**
-   * Example of reloading status field until job status is DONE.
-   */
+  /** Example of reloading status field until job status is DONE. */
   // [TARGET reload(JobOption...)]
   public JobStatus.State reloadStatus() throws InterruptedException {
-    // [START reloadStatus]
-    while (job.getStatus().getState() != JobStatus.State.DONE) {
+    // [START ]
+    while (!JobStatus.State.DONE.equals(job.getStatus().getState())) {
       Thread.sleep(1000L);
       job = job.reload(BigQuery.JobOption.fields(BigQuery.JobField.STATUS));
     }
-    // [END reloadStatus]
+    // [END ]
     return job.getStatus().getState();
   }
 
-  /**
-   * Example of cancelling a job.
-   */
+  /** Example of cancelling a job. */
   // [TARGET cancel()]
   public boolean cancel() {
-    // [START cancel]
+    // [START ]
     if (job.cancel()) {
       return true; // job successfully cancelled
     } else {
       // job not found
     }
-    // [END cancel]
+    // [END ]
     return false;
   }
 }

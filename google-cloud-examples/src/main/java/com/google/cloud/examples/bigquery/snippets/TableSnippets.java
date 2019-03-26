@@ -44,9 +44,7 @@ import java.util.List;
 import java.util.Map;
 import org.threeten.bp.Duration;
 
-/**
- * This class contains a number of snippets for the {@link Table} class.
- */
+/** This class contains a number of snippets for the {@link Table} class. */
 public class TableSnippets {
 
   private final Table table;
@@ -55,74 +53,65 @@ public class TableSnippets {
     this.table = table;
   }
 
-  /**
-   * Example of checking if the table exists.
-   */
+  /** Example of checking if the table exists. */
   // [TARGET exists()]
   public boolean exists() {
-    // [START exists]
+    // [START ]
     boolean exists = table.exists();
     if (exists) {
       // the table exists
     } else {
       // the table was not found
     }
-    // [END exists]
+    // [END ]
     return exists;
   }
 
   /**
-   * Example of fetching the table's latest information, specifying particular table fields to
-   * get.
+   * Example of fetching the table's latest information, specifying particular table fields to get.
    */
   // [TARGET reload(TableOption...)]
   // [VARIABLE TableField.LAST_MODIFIED_TIME]
   // [VARIABLE TableField.NUM_ROWS]
   public Table reloadTableWithFields(TableField field1, TableField field2) {
-    // [START reloadTableWithFields]
+    // [START ]
     Table latestTable = table.reload(TableOption.fields(field1, field2));
     if (latestTable == null) {
       // the table was not found
     }
-    // [END reloadTableWithFields]
+    // [END ]
     return latestTable;
   }
 
-  /**
-   * Example of updating the table's information.
-   */
+  /** Example of updating the table's information. */
   // [TARGET update(TableOption...)]
   public Table update() {
-    // [START update]
+    // [START ]
     Table updatedTable = table.toBuilder().setDescription("new description").build().update();
-    // [END update]
+    // [END ]
     return updatedTable;
   }
 
-  /**
-   * Example of deleting the table.
-   */
+  /** Example of deleting the table. */
   // [TARGET delete()]
   public boolean delete() {
-    // [START delete]
+    // [START ]
     boolean deleted = table.delete();
     if (deleted) {
       // the table was deleted
     } else {
       // the table was not found
     }
-    // [END delete]
+    // [END ]
     return deleted;
   }
 
-  /**
-   * Example of inserting rows into the table.
-   */
+  /** Example of inserting rows into the table. */
   // [TARGET insert(Iterable)]
   // [VARIABLE "rowId1"]
   // [VARIABLE "rowId2"]
   public InsertAllResponse insert(String rowId1, String rowId2) {
-    // [START insert]
+    // [START ]
     List<RowToInsert> rows = new ArrayList<>();
     Map<String, Object> row1 = new HashMap<>();
     row1.put("stringField", "value1");
@@ -134,18 +123,16 @@ public class TableSnippets {
     rows.add(RowToInsert.of(rowId2, row2));
     InsertAllResponse response = table.insert(rows);
     // do something with response
-    // [END insert]
+    // [END ]
     return response;
   }
 
-  /**
-   * Example of inserting rows into the table, ignoring invalid rows.
-   */
+  /** Example of inserting rows into the table, ignoring invalid rows. */
   // [TARGET insert(Iterable, boolean, boolean)]
   // [VARIABLE "rowId1"]
   // [VARIABLE "rowId2"]
   public InsertAllResponse insertWithParams(String rowId1, String rowId2) {
-    // [START insertWithParams]
+    // [START ]
     List<RowToInsert> rows = new ArrayList<>();
     Map<String, Object> row1 = new HashMap<>();
     row1.put("stringField", 1);
@@ -157,53 +144,51 @@ public class TableSnippets {
     rows.add(RowToInsert.of(rowId2, row2));
     InsertAllResponse response = table.insert(rows, true, true);
     // do something with response
-    // [END insertWithParams]
+    // [END ]
     return response;
   }
 
-  /**
-   * Example of listing rows in the table.
-   */
+  /** Example of listing rows in the table. */
   // [TARGET list(TableDataListOption...)]
   public Page<FieldValueList> list() {
-    // [START list]
+    // [START ]
     // This example reads the result 100 rows per RPC call. If there's no need to limit the number,
     // simply omit the option.
     Page<FieldValueList> page = table.list(TableDataListOption.pageSize(100));
     for (FieldValueList row : page.iterateAll()) {
       // do something with the row
     }
-    // [END list]
+    // [END ]
     return page;
   }
 
-  /** Example of listing rows in the table. */
+  /** Example of listing rows in the table given a schema. */
   // [TARGET list(Schema, TableDataListOption...)]
   // [VARIABLE ...]
   // [VARIABLE "my_field"]
   public Page<FieldValueList> list(Schema schema, String field) {
-    // [START list]
+    // [START ]
     Page<FieldValueList> page = table.list(schema);
     for (FieldValueList row : page.iterateAll()) {
       row.get(field);
     }
-    // [END list]
+    // [END ]
     return page;
   }
 
-  /**
-   * Example of copying the table to a destination table.
-   */
+  /** Example of copying the table to a destination table. */
   // [TARGET copy(String, String, JobOption...)]
   // [VARIABLE "my_dataset"]
   // [VARIABLE "my_destination_table"]
   public Job copy(String datasetName, String tableName) {
-    // [START copy]
+    // [START ]
     Job job = table.copy(datasetName, tableName);
     // Wait for the job to complete.
     try {
-      Job completedJob = job.waitFor(RetryOption.initialRetryDelay(Duration.ofSeconds(1)),
-          RetryOption.totalTimeout(Duration.ofMinutes(3)));
+      Job completedJob =
+          job.waitFor(
+              RetryOption.initialRetryDelay(Duration.ofSeconds(1)),
+              RetryOption.totalTimeout(Duration.ofMinutes(3)));
       if (completedJob != null && completedJob.getStatus().getError() == null) {
         // Job completed successfully
       } else {
@@ -212,25 +197,25 @@ public class TableSnippets {
     } catch (InterruptedException e) {
       // Handle interrupted wait
     }
-    // [END copy]
+    // [END ]
     return job;
   }
 
-  /**
-   * Example copying the table to a destination table.
-   */
+  /** Example copying the table to a destination table. */
   // [TARGET copy(TableId, JobOption...)]
   // [VARIABLE "my_dataset"]
   // [VARIABLE "my_destination_table"]
   public Job copyTableId(String dataset, String tableName) throws BigQueryException {
-    // [START copyTableId]
+    // [START bigquery_copy_table]
     TableId destinationId = TableId.of(dataset, tableName);
     JobOption options = JobOption.fields(JobField.STATUS, JobField.USER_EMAIL);
     Job job = table.copy(destinationId, options);
     // Wait for the job to complete.
     try {
-      Job completedJob = job.waitFor(RetryOption.initialRetryDelay(Duration.ofSeconds(1)),
-          RetryOption.totalTimeout(Duration.ofMinutes(3)));
+      Job completedJob =
+          job.waitFor(
+              RetryOption.initialRetryDelay(Duration.ofSeconds(1)),
+              RetryOption.totalTimeout(Duration.ofMinutes(3)));
       if (completedJob != null && completedJob.getStatus().getError() == null) {
         // Job completed successfully.
       } else {
@@ -239,27 +224,27 @@ public class TableSnippets {
     } catch (InterruptedException e) {
       // Handle interrupted wait
     }
-    // [END copyTableId]
+    // [END bigquery_copy_table]
     return job;
   }
 
-  /**
-   * Example of partitioning data to a list of Google Cloud Storage files.
-   */
+  /** Example of partitioning data to a list of Google Cloud Storage files. */
   // [TARGET extract(String, List, JobOption...)]
   // [VARIABLE "CSV"]
   // [VARIABLE "gs://my_bucket/PartitionA_*.csv"]
   // [VARIABLE "gs://my_bucket/PartitionB_*.csv"]
   public Job extractList(String format, String gcsUrl1, String gcsUrl2) {
-    // [START extractList]
+    // [START ]
     List<String> destinationUris = new ArrayList<>();
     destinationUris.add(gcsUrl1);
     destinationUris.add(gcsUrl2);
     Job job = table.extract(format, destinationUris);
     // Wait for the job to complete
     try {
-      Job completedJob = job.waitFor(RetryOption.initialRetryDelay(Duration.ofSeconds(1)),
-          RetryOption.totalTimeout(Duration.ofMinutes(3)));
+      Job completedJob =
+          job.waitFor(
+              RetryOption.initialRetryDelay(Duration.ofSeconds(1)),
+              RetryOption.totalTimeout(Duration.ofMinutes(3)));
       if (completedJob != null && completedJob.getStatus().getError() == null) {
         // Job completed successfully
       } else {
@@ -268,23 +253,23 @@ public class TableSnippets {
     } catch (InterruptedException e) {
       // Handle interrupted wait
     }
-    // [END extractList]
+    // [END ]
     return job;
   }
 
-  /**
-   * Example extracting data to single Google Cloud Storage file.
-   */
+  /** Example extracting data to single Google Cloud Storage file. */
   // [TARGET extract(String, String, JobOption...)]
   // [VARIABLE "CSV"]
   // [VARIABLE "gs://my_bucket/filename.csv"]
   public Job extractSingle(String format, String gcsUrl) {
-    // [START extractSingle]
+    // [START bigquery_extract_table]
     Job job = table.extract(format, gcsUrl);
     // Wait for the job to complete
     try {
-      Job completedJob = job.waitFor(RetryOption.initialRetryDelay(Duration.ofSeconds(1)),
-          RetryOption.totalTimeout(Duration.ofMinutes(3)));
+      Job completedJob =
+          job.waitFor(
+              RetryOption.initialRetryDelay(Duration.ofSeconds(1)),
+              RetryOption.totalTimeout(Duration.ofMinutes(3)));
       if (completedJob != null && completedJob.getStatus().getError() == null) {
         // Job completed successfully
       } else {
@@ -293,26 +278,26 @@ public class TableSnippets {
     } catch (InterruptedException e) {
       // Handle interrupted wait
     }
-    // [END extractSingle]
+    // [END bigquery_extract_table]
     return job;
   }
 
-  /**
-   * Example loading data from a list of Google Cloud Storage files.
-   */
+  /** Example loading data from a list of Google Cloud Storage files. */
   // [TARGET load(FormatOptions, List, JobOption...)]
   // [VARIABLE "gs://my_bucket/filename1.csv"]
   // [VARIABLE "gs://my_bucket/filename2.csv"]
   public Job loadList(String gcsUrl1, String gcsUrl2) {
-    // [START loadList]
+    // [START ]
     List<String> sourceUris = new ArrayList<>();
     sourceUris.add(gcsUrl1);
     sourceUris.add(gcsUrl2);
     Job job = table.load(FormatOptions.csv(), sourceUris);
     // Wait for the job to complete
     try {
-      Job completedJob = job.waitFor(RetryOption.initialRetryDelay(Duration.ofSeconds(1)),
-          RetryOption.totalTimeout(Duration.ofMinutes(3)));
+      Job completedJob =
+          job.waitFor(
+              RetryOption.initialRetryDelay(Duration.ofSeconds(1)),
+              RetryOption.totalTimeout(Duration.ofMinutes(3)));
       if (completedJob != null && completedJob.getStatus().getError() == null) {
         // Job completed successfully
       } else {
@@ -321,22 +306,22 @@ public class TableSnippets {
     } catch (InterruptedException e) {
       // Handle interrupted wait
     }
-    // [END loadList]
+    // [END ]
     return job;
   }
 
-  /**
-   * Example loading data from a single Google Cloud Storage file.
-   */
+  /** Example loading data from a single Google Cloud Storage file. */
   // [TARGET load(FormatOptions, String, JobOption...)]
   // [VARIABLE "gs://my_bucket/filename.csv"]
   public Job loadSingle(String sourceUri) {
-    // [START loadSingle]
+    // [START bigquery_load_table_gcs_csv]
     Job job = table.load(FormatOptions.csv(), sourceUri);
     // Wait for the job to complete
     try {
-      Job completedJob = job.waitFor(RetryOption.initialRetryDelay(Duration.ofSeconds(1)),
-                RetryOption.totalTimeout(Duration.ofMinutes(3)));
+      Job completedJob =
+          job.waitFor(
+              RetryOption.initialRetryDelay(Duration.ofSeconds(1)),
+              RetryOption.totalTimeout(Duration.ofMinutes(3)));
       if (completedJob != null && completedJob.getStatus().getError() == null) {
         // Job completed successfully
       } else {
@@ -345,7 +330,7 @@ public class TableSnippets {
     } catch (InterruptedException e) {
       // Handle interrupted wait
     }
-    // [END loadSingle]
+    // [END bigquery_load_table_gcs_csv]
     return job;
   }
 }
