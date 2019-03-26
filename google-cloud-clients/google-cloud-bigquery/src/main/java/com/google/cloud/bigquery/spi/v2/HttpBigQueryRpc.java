@@ -41,6 +41,8 @@ import com.google.api.services.bigquery.model.GetQueryResultsResponse;
 import com.google.api.services.bigquery.model.Job;
 import com.google.api.services.bigquery.model.JobList;
 import com.google.api.services.bigquery.model.JobStatus;
+import com.google.api.services.bigquery.model.QueryRequest;
+import com.google.api.services.bigquery.model.QueryResponse;
 import com.google.api.services.bigquery.model.Table;
 import com.google.api.services.bigquery.model.TableDataInsertAllRequest;
 import com.google.api.services.bigquery.model.TableDataInsertAllResponse;
@@ -422,6 +424,15 @@ public class HttpBigQueryRpc implements BigQueryRpc {
                   : null)
           .setTimeoutMs(Option.TIMEOUT.getLong(options))
           .execute();
+    } catch (IOException ex) {
+      throw translate(ex);
+    }
+  }
+
+  @Override
+  public QueryResponse query(QueryRequest request) {
+    try {
+      return bigquery.jobs().query(this.options.getProjectId(), request).execute();
     } catch (IOException ex) {
       throw translate(ex);
     }
