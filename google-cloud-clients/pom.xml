@@ -624,10 +624,13 @@
           <showDeprecation>true</showDeprecation>
         </configuration>
       </plugin>
+
+<!-- jbarefoot: maven warning about this so bye-bye
       <plugin>
         <groupId>org.sonatype.plugins</groupId>
         <artifactId>nexus-staging-maven-plugin</artifactId>
       </plugin>
+-->
       <plugin>
         <groupId>org.eluder.coveralls</groupId>
         <artifactId>coveralls-maven-plugin</artifactId>
