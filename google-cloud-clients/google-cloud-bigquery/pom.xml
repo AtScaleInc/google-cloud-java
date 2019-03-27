@@ -108,12 +108,12 @@
     <repository>
       <id>atscale</id>
       <name>atscale-releases</name>
-      <url>http://artifactory.infra.atscale.com/release-local</url>
+      <url>http://artifactory.infra.atscale.com/libs-release</url>
     </repository>
     <snapshotRepository>
       <id>atscale</id>
       <name>atscale-snapshots</name>
-      <url>http://artifactory.infra.atscale.com/snapshot-local</url>
+      <url>http://artifactory.infra.atscale.com/libs-release</url>
     </snapshotRepository>
   </distributionManagement>
 
